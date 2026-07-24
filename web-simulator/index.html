@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IP Smart Kids - Simulator Pembelajaran TK B & SD</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Fredoka+One&display=swap" rel="stylesheet">
+</head>
+<body class="theme-default">
+
+  <!-- Main Tablet Frame Container -->
+  <div class="tablet-container">
+    <div class="tablet-bezel">
+      <div class="tablet-camera"></div>
+      
+      <!-- Screen Content Viewport -->
+      <div class="tablet-screen">
+        
+        <!-- Status / Header Bar -->
+        <header class="app-header">
+          <div class="header-left">
+            <span class="user-avatar" id="header-avatar">🦁</span>
+            <div class="user-info">
+              <span class="user-level" id="header-level">🌱 Beginner</span>
+            </div>
+          </div>
+          
+          <div class="header-center">
+            <h1 class="app-title" id="app-title-text">IP Smart Kids 🌟</h1>
+          </div>
+          
+          <div class="header-right">
+            <div class="stat-badge stars">
+              <span>⭐</span> <span id="stat-stars">0</span>
+            </div>
+            <div class="stat-badge coins">
+              <span>🪙</span> <span id="stat-coins">0</span>
+            </div>
+            <div class="stat-badge streak">
+              <span>🔥</span> <span id="stat-streak">0</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Dynamic Screen Screens -->
+        <main class="app-content">
+
+          <!-- 1. HOME SCREEN -->
+          <section id="screen-home" class="app-screen active">
+            <div class="home-greeting">
+              <h2>Halo, mari belajar sambil bermain! 👋</h2>
+              <p>Pilih petualanganmu hari ini:</p>
+            </div>
+            
+            <div class="menu-grid">
+              <div class="menu-card math-card" onclick="app.navigate('math')">
+                <div class="card-icon">📘</div>
+                <div class="card-info">
+                  <h3>Matematika</h3>
+                  <p>Berhitung visual, Tambah & Kurang</p>
+                </div>
+              </div>
+              
+              <div class="menu-card reading-card" onclick="app.navigate('reading')">
+                <div class="card-icon">📖</div>
+                <div class="card-info">
+                  <h3>Membaca</h3>
+                  <p>Belajar Huruf, Suku Kata & Kata</p>
+                </div>
+              </div>
+              
+              <div class="menu-card writing-card" onclick="app.navigate('writing')">
+                <div class="card-icon">✏️</div>
+                <div class="card-info">
+                  <h3>Menulis</h3>
+                  <p>Menulis Huruf, Angka & Menggambar</p>
+                </div>
+              </div>
+              
+              <div class="menu-card brain-card" onclick="app.navigate('brain')">
+                <div class="card-icon">🧠</div>
+                <div class="card-info">
+                  <h3>Brain Games</h3>
+                  <p>Memory Match & Pola Pintar</p>
+                </div>
+              </div>
+              
+              <div class="menu-card rewards-card" onclick="app.navigate('rewards')">
+                <div class="card-icon">🏆</div>
+                <div class="card-info">
+                  <h3>Toko Hadiah</h3>
+                  <p>Tukar bintang dengan stiker lucu</p>
+                </div>
+              </div>
+
+              <div class="menu-card parent-card" onclick="parentDashboard.openPinModal()">
+                <div class="card-icon">👨‍👩‍👧</div>
+                <div class="card-info">
+                  <h3>Dashboard Orang Tua</h3>
+                  <p>Laporan & Analisis Statistik</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="daily-challenge-banner" onclick="app.navigate('daily-challenge')">
+              <div class="challenge-icon">🎯</div>
+              <div class="challenge-details">
+                <h4>Misi Harian Hari Ini</h4>
+                <p id="daily-challenge-text">Selesaikan 5 soal matematika dan gambar 1 huruf!</p>
+              </div>
+              <button class="btn btn-primary btn-play">Main Sekarang</button>
+            </div>
+          </section>
+
+          <!-- 2. MATHEMATICS SCREEN -->
+          <section id="screen-math" class="app-screen">
+            <div class="screen-header">
+              <button class="btn btn-back" onclick="app.navigate('home')">⬅️ Kembali</button>
+              <h2>📘 Matematika Pintar</h2>
+            </div>
+            
+            <div class="game-container">
+              <div class="game-workspace" id="math-workspace">
+                <!-- Injected dynamically -->
+              </div>
+              <div class="game-feedback" id="math-feedback"></div>
+            </div>
+          </section>
+
+          <!-- 3. READING SCREEN -->
+          <section id="screen-reading" class="app-screen">
+            <div class="screen-header">
+              <button class="btn btn-back" onclick="app.navigate('home')">⬅️ Kembali</button>
+              <h2>📖 Belajar Membaca</h2>
+            </div>
+            
+            <div class="game-container">
+              <div class="game-workspace" id="reading-workspace">
+                <!-- Injected dynamically -->
+              </div>
+              <div class="game-feedback" id="reading-feedback"></div>
+            </div>
+          </section>
+
+          <!-- 4. WRITING CANVAS SCREEN -->
+          <section id="screen-writing" class="app-screen">
+            <div class="screen-header">
+              <button class="btn btn-back" onclick="app.navigate('home')">⬅️ Kembali</button>
+              <h2>✏️ Papan Tulis Menulis</h2>
+              <div class="canvas-controls-header">
+                <button class="btn btn-theme" onclick="canvasModule.toggleBackground()">Ubah Garis/Kotak</button>
+              </div>
+            </div>
+            
+            <div class="canvas-workspace-container">
+              <div class="canvas-letters-guide">
+                <h3>Panduan Menulis</h3>
+                <div class="guide-tabs">
+                  <button class="tab-btn active" onclick="canvasModule.setGuideType('letters')">Huruf A-Z</button>
+                  <button class="tab-btn" onclick="canvasModule.setGuideType('numbers')">Angka 1-10</button>
+                </div>
+                <div class="guide-character-list" id="canvas-guide-chars">
+                  <!-- Injected dynamically -->
+                </div>
+                <div class="stroke-order-box">
+                  <div class="guided-char-preview" id="guided-char-display">A</div>
+                  <p>Ikuti pola di papan tulis!</p>
+                </div>
+              </div>
+              
+              <div class="canvas-area-wrapper">
+                <div class="canvas-canvas-box">
+                  <canvas id="handwriting-canvas"></canvas>
+                </div>
+                <div class="canvas-toolbar">
+                  <button class="tool-btn active" id="tool-pen" onclick="canvasModule.setTool('pen')">🖌️ Pensil</button>
+                  <button class="tool-btn" id="tool-eraser" onclick="canvasModule.setTool('eraser')">🧽 Penghapus</button>
+                  <span class="tool-divider"></span>
+                  <button class="tool-btn" onclick="canvasModule.undo()">↩️ Undo</button>
+                  <button class="tool-btn" onclick="canvasModule.redo()">↪️ Redo</button>
+                  <button class="tool-btn danger" onclick="canvasModule.clear()">🗑️ Bersihkan</button>
+                  <span class="tool-divider"></span>
+                  <button class="btn btn-primary" onclick="canvasModule.checkWriting()">Selesai Menulis</button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- 5. BRAIN GAMES SCREEN -->
+          <section id="screen-brain" class="app-screen">
+            <div class="screen-header">
+              <button class="btn btn-back" onclick="app.navigate('home')">⬅️ Kembali</button>
+              <h2>🧠 Brain Games</h2>
+            </div>
+            
+            <div class="game-container">
+              <div class="game-workspace" id="brain-workspace">
+                <!-- Memory matching, Pattern Completion, sequences -->
+              </div>
+              <div class="game-feedback" id="brain-feedback"></div>
+            </div>
+          </section>
+
+          <!-- 6. REWARDS SHOP SCREEN -->
+          <section id="screen-rewards" class="app-screen">
+            <div class="screen-header">
+              <button class="btn btn-back" onclick="app.navigate('home')">⬅️ Kembali</button>
+              <h2>🏆 Toko Hadiah Bintang</h2>
+            </div>
+            <div class="rewards-shop-container">
+              <div class="rewards-tabs">
+                <button class="tab-btn active" onclick="rewardsModule.setTab('avatars')">🦁 Avatarmu</button>
+                <button class="tab-btn" onclick="rewardsModule.setTab('stickers')">✨ Stiker Buku</button>
+                <button class="tab-btn" onclick="rewardsModule.setTab('themes')">🎨 Tema</button>
+              </div>
+              <div class="rewards-grid" id="rewards-grid">
+                <!-- Injected dynamically -->
+              </div>
+            </div>
+          </section>
+
+          <!-- 7. PARENT DASHBOARD SCREEN -->
+          <section id="screen-parent" class="app-screen">
+            <div class="screen-header">
+              <button class="btn btn-back" onclick="app.navigate('home')">⬅️ Kembali</button>
+              <h2>👨‍👩‍👧 Dashboard Analisis Orang Tua</h2>
+              <button class="btn btn-primary" onclick="parentDashboard.exportToPDF()">Cetak / Simpan PDF</button>
+            </div>
+            <div class="parent-dashboard-content">
+              <!-- Summary Grid -->
+              <div class="summary-stats-grid">
+                <div class="stat-card">
+                  <div class="stat-val" id="parent-stat-days">0</div>
+                  <div class="stat-lbl">Hari Belajar</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-val" id="parent-stat-streak">0 Hari</div>
+                  <div class="stat-lbl">Streak Belajar</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-val" id="parent-stat-duration">0 Menit</div>
+                  <div class="stat-lbl">Total Waktu Belajar</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-val" id="parent-stat-accuracy">0%</div>
+                  <div class="stat-lbl">Rata-rata Akurasi</div>
+                </div>
+              </div>
+
+              <!-- Main Charts & Details -->
+              <div class="charts-row">
+                <div class="chart-box">
+                  <h3>Kemajuan Mata Pelajaran</h3>
+                  <div class="custom-chart-container">
+                    <div class="subject-progress-row">
+                      <span class="subject-name">Matematika</span>
+                      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-math" style="width: 0%"></div></div>
+                      <span class="progress-percent" id="pct-math">0%</span>
+                    </div>
+                    <div class="subject-progress-row">
+                      <span class="subject-name">Membaca</span>
+                      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-reading" style="width: 0%"></div></div>
+                      <span class="progress-percent" id="pct-reading">0%</span>
+                    </div>
+                    <div class="subject-progress-row">
+                      <span class="subject-name">Menulis</span>
+                      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-writing" style="width: 0%"></div></div>
+                      <span class="progress-percent" id="pct-writing">0%</span>
+                    </div>
+                    <div class="subject-progress-row">
+                      <span class="subject-name">Brain Games</span>
+                      <div class="progress-bar-outer"><div class="progress-bar-inner" id="progress-brain" style="width: 0%"></div></div>
+                      <span class="progress-percent" id="pct-brain">0%</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="recommendations-box">
+                  <h3>Rekomendasi Belajar</h3>
+                  <ul class="recommendation-list" id="recommendation-list">
+                    <li>Semuanya tampak bagus! Lanjutkan belajar setiap hari.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Session History Table -->
+              <div class="history-box">
+                <h3>Riwayat Belajar Anak</h3>
+                <div class="history-table-wrapper">
+                  <table class="history-table">
+                    <thead>
+                      <tr>
+                        <th>Tanggal</th>
+                        <th>Subjek</th>
+                        <th>Durasi</th>
+                        <th>Skor</th>
+                        <th>Hasil</th>
+                      </tr>
+                    </thead>
+                    <tbody id="parent-history-rows">
+                      <tr><td colspan="5" style="text-align:center;">Belum ada sesi tercatat.</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="danger-zone">
+                <button class="btn btn-danger" onclick="parentDashboard.resetProgress()">⚠️ Reset Seluruh Kemajuan</button>
+              </div>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parent PIN Dialog Modal -->
+  <div class="modal-overlay" id="pin-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>🔒 Keamanan Dashboard Orang Tua</h3>
+      </div>
+      <div class="modal-body">
+        <p>Masukkan PIN untuk mengakses statistik belajar anak:</p>
+        <p class="pin-hint">Petunjuk PIN Standar: <strong>1234</strong></p>
+        <div class="pin-inputs-wrapper">
+          <input type="password" maxlength="4" id="parent-pin-input" class="pin-input" autofocus>
+        </div>
+        <div class="pin-error" id="pin-error-msg">PIN Salah! Coba lagi.</div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" onclick="parentDashboard.closePinModal()">Batal</button>
+        <button class="btn btn-primary" onclick="parentDashboard.submitPin()">Verifikasi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Celebration Overlay -->
+  <div class="celebration-overlay" id="celebration-overlay">
+    <div class="celebration-card">
+      <div class="celebration-emojis">🎉🌟🏆🌟🎉</div>
+      <h2 id="celebration-title">Hebat Sekali!</h2>
+      <p id="celebration-message">Kamu mendapatkan bintang dan koin baru!</p>
+      <div class="celebration-awards">
+        <span class="award-item">⭐ +<span id="earned-stars">0</span></span>
+        <span class="award-item">🪙 +<span id="earned-coins">0</span></span>
+      </div>
+      <button class="btn btn-primary" onclick="app.closeCelebration()">Lanjutkan</button>
+    </div>
+  </div>
+
+  <!-- Speech/Voice Synth Audio Controller -->
+  <audio id="audio-click" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav" preload="auto"></audio>
+  <audio id="audio-success" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-84.wav" preload="auto"></audio>
+  <audio id="audio-fail" src="https://assets.mixkit.co/active_storage/sfx/2573/2573-84.wav" preload="auto"></audio>
+  <audio id="audio-complete" src="https://assets.mixkit.co/active_storage/sfx/1435/1435-84.wav" preload="auto"></audio>
+
+  <!-- Include Scripts -->
+  <script src="canvas.js"></script>
+  <script src="games.js"></script>
+  <script src="parent.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

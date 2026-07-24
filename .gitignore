@@ -1,0 +1,34 @@
+# Built artifacts
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART pipeline
+*.prof
+
+# Gradle files
+.gradle/
+build/
+app/build/
+
+# Local configuration file (sdk path, etc.)
+local.properties
+
+# Log Files
+*.log
+
+# Android Studio Local files
+.navigation/
+.idea/workspace.xml
+.idea/caches/
+.idea/libraries/
+.idea/modules.xml
+.idea/deploymentTargetSelector.xml
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Web Simulator temp
+web-simulator/.DS_Store
