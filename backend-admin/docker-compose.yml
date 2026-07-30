@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  quiz-admin:
+    build: .
+    container_name: ipang-kids-quiz-server
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - ADMIN_KEY=ipang123
+    volumes:
+      - ./quiz.db:/app/quiz.db

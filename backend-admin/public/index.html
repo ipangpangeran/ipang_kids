@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Admin Kuis Ipang Kids</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal active">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>🔒 Login Admin Ipang Kids</h2>
+        <p>Masukkan Key Kunci Admin untuk mengelola konten kuis</p>
+      </div>
+      <form id="login-form">
+        <div class="form-group">
+          <label for="admin-key-input">Admin Passkey</label>
+          <input type="password" id="admin-key-input" placeholder="Masukkan Passkey Admin..." required value="ipang123">
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">Masuk Portal Admin 🚀</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-icon">🎓</span>
+        <div>
+          <h2>Ipang Kids</h2>
+          <span class="badge">Quiz Admin v1.0</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="math">
+          <span class="nav-icon">📐</span> Matematika
+        </button>
+        <button class="nav-item" data-tab="reading">
+          <span class="nav-icon">📖</span> Baca & Tulis
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p class="server-status">🟢 Connected to <br><code>api.ipangpangeran.com</code></p>
+        <button id="btn-logout" class="btn btn-secondary btn-small">Logout 🔒</button>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <header class="top-header">
+        <div>
+          <h1 id="page-title">Management Kuis Matematika</h1>
+          <p id="page-subtitle">Tambah, edit, dan hapus soal kuis secara real-time tanpa build ulang APK Android!</p>
+        </div>
+        <button id="btn-add-question" class="btn btn-success">+ Tambah Soal Baru ➕</button>
+      </header>
+
+      <!-- Stats Summary Row -->
+      <section class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-icon">📊</span>
+          <div>
+            <h3 id="stat-total-questions">0</h3>
+            <p>Total Soal Aktif</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">🏷️</span>
+          <div>
+            <h3 id="stat-categories">5</h3>
+            <p>Kategori Pembelajaran</p>
+          </div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">📱</span>
+          <div>
+            <h3>Real-time Sync</h3>
+            <p>Langsung Update ke HP Android</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter & Search Toolbar -->
+      <section class="toolbar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Cari teks soal / kata kunci...">
+        </div>
+        <div class="filter-group" id="math-filters">
+          <select id="filter-category">
+            <option value="ALL">Semua Kategori</option>
+            <option value="ADDITION">Penjumlahan (+)</option>
+            <option value="SUBTRACTION">Pengurangan (-)</option>
+            <option value="MULTIPLICATION">Perkalian (×)</option>
+            <option value="DIVISION">Pembagian (÷)</option>
+            <option value="MIXED">Campuran (🎲)</option>
+          </select>
+          <select id="filter-difficulty">
+            <option value="ALL">Semua Level</option>
+            <option value="EASY">🌱 Mudah</option>
+            <option value="MEDIUM">🌿 Sedang</option>
+            <option value="HARD">🚀 Cerita</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- Questions List Container -->
+      <section id="questions-grid" class="questions-grid">
+        <!-- Rendered dynamically via JavaScript -->
+      </section>
+    </main>
+  </div>
+
+  <!-- Add/Edit Question Modal -->
+  <div id="question-modal" class="modal">
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h2 id="modal-title">Tambah Soal Baru</h2>
+        <span class="close-modal" id="btn-close-modal">&times;</span>
+      </div>
+
+      <form id="question-form">
+        <input type="hidden" id="form-question-id">
+        <input type="hidden" id="form-type" value="math">
+
+        <!-- Form fields for Math -->
+        <div id="form-math-fields">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="math-category">Kategori Matematika</label>
+              <select id="math-category" required>
+                <option value="ADDITION">Penjumlahan (+)</option>
+                <option value="SUBTRACTION">Pengurangan (-)</option>
+                <option value="MULTIPLICATION">Perkalian (×)</option>
+                <option value="DIVISION">Pembagian (÷)</option>
+                <option value="MIXED">Campuran (🎲)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="math-difficulty">Tingkat Kesulitan</label>
+              <select id="math-difficulty" required>
+                <option value="EASY">🌱 Mudah</option>
+                <option value="MEDIUM">🌿 Sedang</option>
+                <option value="HARD">🚀 Cerita / Tantangan</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form fields for Reading -->
+        <div id="form-reading-fields" style="display: none;">
+          <div class="form-group">
+            <label for="reading-category-title">Judul Kategori Membaca</label>
+            <input type="text" id="reading-category-title" placeholder="Contoh: Tebak Gambar & Kata, Lengkapi Suku Kata">
+          </div>
+          <div class="form-group">
+            <label for="reading-emoji">Emoji Visual</label>
+            <input type="text" id="reading-emoji" placeholder="Contoh: 🍎, ⚽, 🐱">
+          </div>
+        </div>
+
+        <!-- Common Question Text & Visual -->
+        <div class="form-group">
+          <label for="question-text">Teks Pertanyaan Soal</label>
+          <textarea id="question-text" rows="2" placeholder="Masukkan pertanyaan soal..." required></textarea>
+        </div>
+
+        <div class="form-group" id="math-visual-group">
+          <label for="math-visual">Visual Represenasi / Gambar Emoji (Opsional)</label>
+          <input type="text" id="math-visual" placeholder="Contoh: 🍎🍎 + 🍎🍎🍎, (⭐⭐) (⭐⭐)">
+        </div>
+
+        <!-- 4 Options Grid -->
+        <label>Pilihan Jawaban (4 Pilihan)</label>
+        <div class="options-inputs-grid">
+          <div class="form-group">
+            <label>Pilihan A</label>
+            <input type="text" id="opt-a" required placeholder="Jawaban A">
+          </div>
+          <div class="form-group">
+            <label>Pilihan B</label>
+            <input type="text" id="opt-b" required placeholder="Jawaban B">
+          </div>
+          <div class="form-group">
+            <label>Pilihan C</label>
+            <input type="text" id="opt-c" required placeholder="Jawaban C">
+          </div>
+          <div class="form-group">
+            <label>Pilihan D</label>
+            <input type="text" id="opt-d" required placeholder="Jawaban D">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="correct-answer">Jawaban Yang Benar</label>
+            <input type="text" id="correct-answer" required placeholder="Harus sama persis dengan salah satu Pilihan A/B/C/D">
+          </div>
+          <div class="form-group">
+            <label for="explanation-tip">Petunjuk Pembahasan (Tip)</label>
+            <input type="text" id="explanation-tip" placeholder="Contoh: 2 ditambahkan 3 menjadi 5">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="btn-cancel-modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Soal 💾</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

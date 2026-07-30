@@ -41,7 +41,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.2"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
         resources {
@@ -51,10 +51,11 @@ android {
 }
 
 dependencies {
-    // Core Android
+    // Core Android & Material
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.0")
+    implementation("com.google.android.material:material:1.11.0")
 
     // Compose (Material 3, UI, Tooling, Navigation)
     implementation(platform("androidx.compose:compose-bom:2023.09.00"))

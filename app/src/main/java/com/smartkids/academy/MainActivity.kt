@@ -28,6 +28,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.smartkids.academy.ui.theme.*
 import com.smartkids.academy.ui.components.HandwritingCanvas
+import com.smartkids.academy.ui.screens.*
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +88,7 @@ data class NavigationItem(
 fun HomeScreen(navController: NavController) {
     val menuItems = listOf(
         NavigationItem("📘 Mathematics", "Numbers & visual calculations", Icons.Default.Add, SoftBluePrimary, SoftBlueSecondary, Screen.Math.route),
-        NavigationItem("📖 Reading", "Phonics, letters & simple words", Icons.Default.Book, SoftGreenMath, SoftGreenMath.copy(alpha = 0.8f), Screen.Reading.route),
+        NavigationItem("📖 Reading", "Phonics, letters & simple words", Icons.Default.Create, SoftGreenMath, SoftGreenMath.copy(alpha = 0.8f), Screen.Reading.route),
         NavigationItem("✏️ Writing", "Trace letters, numbers & words", Icons.Default.Edit, SoftOrangeReading, SoftOrangeReading.copy(alpha = 0.8f), Screen.Writing.route),
         NavigationItem("🧠 Brain Games", "Memory match, sequences & patterns", Icons.Default.Star, SoftPurpleWriting, SoftPurpleWriting.copy(alpha = 0.8f), Screen.BrainGames.route),
         NavigationItem("⭐ Rewards Shop", "Spend stars on stickers & stickers", Icons.Default.ShoppingCart, SoftPinkBrain, SoftPinkBrain.copy(alpha = 0.8f), Screen.Rewards.route),
@@ -121,7 +122,7 @@ fun HomeScreen(navController: NavController) {
             )
 
             LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
+                columns = GridCells.Adaptive(minSize = 150.dp),
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -175,65 +176,7 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
-// Game module placeholders
-@Composable
-fun MathScreen(navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("📘 Mathematics Module", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Addition: 🍎 + 🍎 = 2 🍎s", fontSize = 20.sp)
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { navController.navigateUp() }) {
-            Text("Back to Home")
-        }
-    }
-}
-
-@Composable
-fun ReadingScreen(navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("📖 Reading Module", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Spell simple words: B-A-B-I (Babi), K-A-K-I (Kaki)", fontSize = 20.sp)
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { navController.navigateUp() }) {
-            Text("Back to Home")
-        }
-    }
-}
-
-@Composable
-fun WritingScreen(navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp)
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text("✏️ Writing Canvas", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-            Button(onClick = { navController.navigateUp() }) {
-                Text("Back")
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("Trace the alphabet or practice writing numbers below:")
-        Spacer(modifier = Modifier.height(8.dp))
-        HandwritingCanvas(
-            modifier = Modifier.fillMaxSize().weight(1f),
-            useGridBackground = false
-        )
-    }
-}
+// Game module screens imported from ui.screens package
 
 @Composable
 fun BrainGamesScreen(navController: NavController) {
