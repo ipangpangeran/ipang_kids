@@ -4,6 +4,7 @@ const path = require('path');
 const db = require('./db');
 
 const app = express();
+const PORT = process.env.PORT || 8765;
 const ADMIN_USER = process.env.ADMIN_USER || "admin";
 const ADMIN_PASS = process.env.ADMIN_PASS || "adminipang123";
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "ipang_auth_token_8765_secret";
