@@ -8,7 +8,7 @@ module.exports = {
     max_memory_restart: '150M',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000,
+      PORT: 8765,
       ADMIN_KEY: 'ipang123'
     }
   }]
