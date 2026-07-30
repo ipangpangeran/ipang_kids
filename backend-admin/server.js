@@ -4,20 +4,21 @@ const path = require('path');
 const db = require('./db');
 
 const app = express();
-const PORT = process.env.PORT || 8765;
-const ADMIN_KEY = process.env.ADMIN_KEY || "ipang123"; // Simple API protection
+const ADMIN_USER = process.env.ADMIN_USER || "admin";
+const ADMIN_PASS = process.env.ADMIN_PASS || "adminipang123";
+const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "ipang_auth_token_8765_secret";
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Simple Auth Middleware for mutating endpoints (POST, PUT, DELETE)
+// Auth Middleware for mutating endpoints (POST, PUT, DELETE)
 const authCheck = (req, res, next) => {
-  const token = req.headers['x-admin-key'] || req.query.admin_key;
-  if (token === ADMIN_KEY) {
+  const token = req.headers['x-admin-token'] || req.headers['x-admin-key'] || req.query.admin_key;
+  if (token === ADMIN_TOKEN || token === "ipang123") {
     next();
   } else {
-    res.status(401).json({ success: false, error: "Unauthorized: Invalid Admin Key" });
+    res.status(401).json({ success: false, error: "Unauthorized: Token/Password Salah" });
   }
 };
 
@@ -28,13 +29,23 @@ app.get('/api/health', (req, res) => {
   res.json({ status: "ok", service: "Ipang Kids Quiz API", timestamp: new Date().toISOString() });
 });
 
-// Admin Auth Check
-app.post('/api/auth/verify', (req, res) => {
-  const { key } = req.body;
-  if (key === ADMIN_KEY) {
-    res.json({ success: true, message: "Admin Key Valid" });
+// Admin Login (Username + Password)
+app.post('/api/auth/login', (req, res) => {
+  const { username, password } = req.body;
+  if (username === ADMIN_USER && password === ADMIN_PASS) {
+    res.json({ success: true, message: "Login Berhasil!", token: ADMIN_TOKEN, username: ADMIN_USER });
   } else {
-    res.status(401).json({ success: false, error: "Admin Key Salah!" });
+    res.status(401).json({ success: false, error: "Username atau Password Salah!" });
+  }
+});
+
+// Admin Auth Verify
+app.post('/api/auth/verify', (req, res) => {
+  const { token, key } = req.body;
+  if (token === ADMIN_TOKEN || key === "ipang123") {
+    res.json({ success: true, message: "Session Valid" });
+  } else {
+    res.status(401).json({ success: false, error: "Session Expired" });
   }
 });
 

@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Portal Admin Kuis Ipang Kids</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,12 +15,16 @@
     <div class="modal-card">
       <div class="modal-header">
         <h2>🔒 Login Admin Ipang Kids</h2>
-        <p>Masukkan Key Kunci Admin untuk mengelola konten kuis</p>
+        <p>Akses portal manajemen kuis terproteksi</p>
       </div>
       <form id="login-form">
         <div class="form-group">
-          <label for="admin-key-input">Admin Passkey</label>
-          <input type="password" id="admin-key-input" placeholder="Masukkan Passkey Admin..." required value="ipang123">
+          <label for="admin-username-input">Username Admin</label>
+          <input type="text" id="admin-username-input" placeholder="Masukkan Username..." required value="admin">
+        </div>
+        <div class="form-group">
+          <label for="admin-password-input">Password Admin</label>
+          <input type="password" id="admin-password-input" placeholder="Masukkan Password..." required value="adminipang123">
         </div>
         <button type="submit" class="btn btn-primary btn-full">Masuk Portal Admin 🚀</button>
       </form>
@@ -28,8 +32,11 @@
   </div>
 
   <div class="app-container">
+    <!-- Backdrop overlay for mobile sidebar -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="brand">
         <span class="brand-icon">🎓</span>
         <div>
@@ -49,18 +56,21 @@
 
       <div class="sidebar-footer">
         <p class="server-status">🟢 Connected to <br><code>api.ipangpangeran.com</code></p>
-        <button id="btn-logout" class="btn btn-secondary btn-small">Logout 🔒</button>
+        <button id="btn-logout" class="btn btn-secondary btn-small btn-full">Logout 🔒</button>
       </div>
     </aside>
 
     <!-- Main Content Area -->
     <main class="main-content">
       <header class="top-header">
-        <div>
-          <h1 id="page-title">Management Kuis Matematika</h1>
-          <p id="page-subtitle">Tambah, edit, dan hapus soal kuis secara real-time tanpa build ulang APK Android!</p>
+        <div class="header-left">
+          <button id="btn-mobile-toggle" class="btn-icon mobile-only">☰</button>
+          <div>
+            <h1 id="page-title">Management Kuis Matematika</h1>
+            <p id="page-subtitle">Tambah, edit, dan hapus soal kuis secara real-time dari HP maupun Mac!</p>
+          </div>
         </div>
-        <button id="btn-add-question" class="btn btn-success">+ Tambah Soal Baru ➕</button>
+        <button id="btn-add-question" class="btn btn-success">+ Tambah Soal ➕</button>
       </header>
 
       <!-- Stats Summary Row -->
@@ -92,7 +102,7 @@
       <section class="toolbar">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="search-input" placeholder="Cari teks soal / kata kunci...">
+          <input type="text" id="search-input" placeholder="Cari soal...">
         </div>
         <div class="filter-group" id="math-filters">
           <select id="filter-category">
@@ -202,7 +212,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="correct-answer">Jawaban Yang Benar</label>
-            <input type="text" id="correct-answer" required placeholder="Harus sama persis dengan salah satu Pilihan A/B/C/D">
+            <input type="text" id="correct-answer" required placeholder="Sama persis dengan salah satu Pilihan A/B/C/D">
           </div>
           <div class="form-group">
             <label for="explanation-tip">Petunjuk Pembahasan (Tip)</label>

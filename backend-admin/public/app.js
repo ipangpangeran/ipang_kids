@@ -1,4 +1,4 @@
-let adminKey = localStorage.getItem('admin_key') || '';
+let adminToken = localStorage.getItem('admin_token') || '';
 let currentTab = 'math';
 let questionsList = [];
 
@@ -8,52 +8,88 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Auth Setup
-function initAuth() {
+async function initAuth() {
   const loginModal = document.getElementById('login-modal');
-  if (adminKey) {
-    loginModal.classList.remove('active');
-    loadQuestions();
-  } else {
-    loginModal.classList.add('active');
-  }
-}
-
-function setupEventListeners() {
-  // Login Form
-  document.getElementById('login-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const inputKey = document.getElementById('admin-key-input').value.trim();
-
+  if (adminToken) {
     try {
       const res = await fetch('/api/auth/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: inputKey })
+        body: JSON.stringify({ token: adminToken })
+      });
+      const data = await res.json();
+      if (data.success) {
+        loginModal.classList.remove('active');
+        loadQuestions();
+        return;
+      }
+    } catch (_e) {}
+  }
+  adminToken = '';
+  localStorage.removeItem('admin_token');
+  loginModal.classList.add('active');
+}
+
+function setupEventListeners() {
+  // Mobile Sidebar Drawer Toggle
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const mobileToggleBtn = document.getElementById('btn-mobile-toggle');
+
+  function openMobileSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('active');
+  }
+
+  function closeMobileSidebar() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  }
+
+  if (mobileToggleBtn) {
+    mobileToggleBtn.addEventListener('click', openMobileSidebar);
+  }
+  if (overlay) {
+    overlay.addEventListener('click', closeMobileSidebar);
+  }
+
+  // Login Form Submission (Username + Password)
+  document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const usernameInput = document.getElementById('admin-username-input').value.trim();
+    const passwordInput = document.getElementById('admin-password-input').value.trim();
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: usernameInput, password: passwordInput })
       });
       const data = await res.json();
 
-      if (data.success) {
-        adminKey = inputKey;
-        localStorage.setItem('admin_key', adminKey);
+      if (data.success && data.token) {
+        adminToken = data.token;
+        localStorage.setItem('admin_token', adminToken);
         document.getElementById('login-modal').classList.remove('active');
         showToast('Login Admin Berhasil! 🚀', 'success');
         loadQuestions();
       } else {
-        showToast(data.error || 'Key Admin Salah!', 'error');
+        showToast(data.error || 'Username atau Password Salah!', 'error');
       }
     } catch (err) {
       showToast('Gagal terhubung ke server!', 'error');
     }
   });
 
-  // Logout
+  // Logout Button
   document.getElementById('btn-logout').addEventListener('click', () => {
-    adminKey = '';
-    localStorage.removeItem('admin_key');
+    adminToken = '';
+    localStorage.removeItem('admin_token');
     document.getElementById('login-modal').classList.add('active');
+    closeMobileSidebar();
   });
 
-  // Tab Switch
+  // Tab Switch (Math / Reading)
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -66,11 +102,12 @@ function setupEventListeners() {
       document.getElementById('form-reading-fields').style.display = (currentTab === 'reading') ? 'block' : 'none';
 
       document.getElementById('page-title').innerText = (currentTab === 'math') ? 'Management Kuis Matematika' : 'Management Kuis Baca & Tulis';
+      closeMobileSidebar();
       loadQuestions();
     });
   });
 
-  // Filters & Search
+  // Filter & Search Inputs
   document.getElementById('filter-category').addEventListener('change', filterAndRender);
   document.getElementById('filter-difficulty').addEventListener('change', filterAndRender);
   document.getElementById('search-input').addEventListener('input', filterAndRender);
@@ -80,11 +117,11 @@ function setupEventListeners() {
     openQuestionModal();
   });
 
-  // Close Modal
+  // Close Modal Buttons
   document.getElementById('btn-close-modal').addEventListener('click', closeQuestionModal);
   document.getElementById('btn-cancel-modal').addEventListener('click', closeQuestionModal);
 
-  // Form Submit
+  // Question Form Submit
   document.getElementById('question-form').addEventListener('submit', handleFormSubmit);
 }
 
@@ -105,7 +142,7 @@ async function loadQuestions() {
   }
 }
 
-// Filter and Render Cards
+// Filter & Render Cards
 function filterAndRender() {
   const search = document.getElementById('search-input').value.toLowerCase();
   const catFilter = document.getElementById('filter-category').value;
@@ -160,7 +197,7 @@ function filterAndRender() {
   });
 }
 
-// Open Modal for Add/Edit
+// Open Question Modal
 function openQuestionModal(editData = null) {
   const modal = document.getElementById('question-modal');
   const form = document.getElementById('question-form');
@@ -204,7 +241,7 @@ window.editQuestion = function(id) {
   if (q) openQuestionModal(q);
 };
 
-// Delete Question
+// Delete Question Trigger
 window.deleteQuestion = async function(id) {
   if (!confirm('Apakah Anda yakin ingin menghapus soal ini?')) return;
 
@@ -212,7 +249,7 @@ window.deleteQuestion = async function(id) {
     const url = (currentTab === 'math') ? `/api/math/${id}` : `/api/reading/${id}`;
     const res = await fetch(url, {
       method: 'DELETE',
-      headers: { 'x-admin-key': adminKey }
+      headers: { 'x-admin-token': adminToken }
     });
     const data = await res.json();
 
@@ -265,7 +302,7 @@ async function handleFormSubmit(e) {
       method,
       headers: {
         'Content-Type': 'application/json',
-        'x-admin-key': adminKey
+        'x-admin-token': adminToken
       },
       body: JSON.stringify(body)
     });
@@ -284,7 +321,7 @@ async function handleFormSubmit(e) {
   }
 }
 
-// Toast Helper
+// Toast Notification
 function showToast(msg, type = 'info') {
   const container = document.getElementById('toast-container');
   const toast = document.createElement('div');
