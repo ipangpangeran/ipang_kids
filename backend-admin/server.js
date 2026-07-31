@@ -19,7 +19,7 @@ const authCheck = (req, res, next) => {
   if (token === ADMIN_TOKEN || token === "ipang123") {
     next();
   } else {
-    res.status(401).json({ success: false, error: "Unauthorized: Token/Password Salah" });
+    res.status(401).json({ success: false, error: "Unauthorized: Token atau Password Salah!" });
   }
 };
 
@@ -52,27 +52,11 @@ app.post('/api/auth/verify', (req, res) => {
 
 // --- MATH QUIZ ENDPOINTS ---
 
-// GET All Math Questions (For App & Portal)
+// GET All Math Questions
 app.get('/api/math', (req, res) => {
-  const { category, difficulty } = req.query;
-  let sql = "SELECT * FROM math_questions WHERE 1=1";
-  const params = [];
-
-  if (category && category !== 'ALL') {
-    sql += " AND category = ?";
-    params.push(category);
-  }
-  if (difficulty && difficulty !== 'ALL') {
-    sql += " AND difficulty = ?";
-    params.push(difficulty);
-  }
-
-  sql += " ORDER BY id DESC";
-
-  db.all(sql, params, (err, rows) => {
+  db.all("SELECT * FROM math_questions ORDER BY id DESC", [], (err, rows) => {
     if (err) return res.status(500).json({ success: false, error: err.message });
-    
-    // Map to App format
+
     const mapped = rows.map(r => ({
       id: r.id,
       category: r.category,
@@ -80,7 +64,7 @@ app.get('/api/math', (req, res) => {
       questionText: r.question_text,
       visualRepresentation: r.visual_rep || "",
       options: [r.option_a, r.option_b, r.option_c, r.option_d],
-      correctAnswer: r.correct_answer,
+      correctAnswer: isNaN(r.correct_answer) ? r.correct_answer : Number(r.correct_answer),
       explanationTip: r.explanation_tip || ""
     }));
 
@@ -110,7 +94,7 @@ app.post('/api/math', authCheck, (req, res) => {
     options[1],
     options[2],
     options[3],
-    correctAnswer,
+    String(correctAnswer),
     explanationTip || ""
   ], function(err) {
     if (err) return res.status(500).json({ success: false, error: err.message });
@@ -122,6 +106,10 @@ app.post('/api/math', authCheck, (req, res) => {
 app.put('/api/math/:id', authCheck, (req, res) => {
   const { id } = req.params;
   const { category, difficulty, questionText, visualRepresentation, options, correctAnswer, explanationTip } = req.body;
+
+  if (!category || !difficulty || !questionText || !options || options.length < 4 || correctAnswer === undefined) {
+    return res.status(400).json({ success: false, error: "Field tidak lengkap. Mohon isi semua data!" });
+  }
 
   const sql = `
     UPDATE math_questions 
@@ -138,9 +126,9 @@ app.put('/api/math/:id', authCheck, (req, res) => {
     options[1],
     options[2],
     options[3],
-    correctAnswer,
+    String(correctAnswer),
     explanationTip || "",
-    id
+    Number(id)
   ], function(err) {
     if (err) return res.status(500).json({ success: false, error: err.message });
     if (this.changes === 0) return res.status(404).json({ success: false, error: "Soal tidak ditemukan" });
@@ -151,7 +139,7 @@ app.put('/api/math/:id', authCheck, (req, res) => {
 // DELETE Math Question
 app.delete('/api/math/:id', authCheck, (req, res) => {
   const { id } = req.params;
-  db.run("DELETE FROM math_questions WHERE id = ?", [id], function(err) {
+  db.run("DELETE FROM math_questions WHERE id = ?", [Number(id)], function(err) {
     if (err) return res.status(500).json({ success: false, error: err.message });
     if (this.changes === 0) return res.status(404).json({ success: false, error: "Soal tidak ditemukan" });
     res.json({ success: true, message: "Soal Matematika berhasil dihapus!" });
@@ -171,7 +159,7 @@ app.get('/api/reading', (req, res) => {
       questionText: r.question_text,
       emoji: r.emoji || "",
       options: [r.option_a, r.option_b, r.option_c, r.option_d],
-      correctAnswer: r.correct_answer,
+      correctAnswer: isNaN(r.correct_answer) ? r.correct_answer : Number(r.correct_answer),
       explanationTip: r.explanation_tip || ""
     }));
 
@@ -183,7 +171,7 @@ app.get('/api/reading', (req, res) => {
 app.post('/api/reading', authCheck, (req, res) => {
   const { categoryTitle, questionText, emoji, options, correctAnswer, explanationTip } = req.body;
 
-  if (!categoryTitle || !questionText || !options || options.length < 4 || !correctAnswer) {
+  if (!categoryTitle || !questionText || !options || options.length < 4 || correctAnswer === undefined) {
     return res.status(400).json({ success: false, error: "Field tidak lengkap. Mohon isi semua data!" });
   }
 
@@ -200,7 +188,7 @@ app.post('/api/reading', authCheck, (req, res) => {
     options[1],
     options[2],
     options[3],
-    correctAnswer,
+    String(correctAnswer),
     explanationTip || ""
   ], function(err) {
     if (err) return res.status(500).json({ success: false, error: err.message });
@@ -212,6 +200,10 @@ app.post('/api/reading', authCheck, (req, res) => {
 app.put('/api/reading/:id', authCheck, (req, res) => {
   const { id } = req.params;
   const { categoryTitle, questionText, emoji, options, correctAnswer, explanationTip } = req.body;
+
+  if (!categoryTitle || !questionText || !options || options.length < 4 || correctAnswer === undefined) {
+    return res.status(400).json({ success: false, error: "Field tidak lengkap. Mohon isi semua data!" });
+  }
 
   const sql = `
     UPDATE reading_questions
@@ -227,9 +219,9 @@ app.put('/api/reading/:id', authCheck, (req, res) => {
     options[1],
     options[2],
     options[3],
-    correctAnswer,
+    String(correctAnswer),
     explanationTip || "",
-    id
+    Number(id)
   ], function(err) {
     if (err) return res.status(500).json({ success: false, error: err.message });
     if (this.changes === 0) return res.status(404).json({ success: false, error: "Soal tidak ditemukan" });
@@ -240,16 +232,11 @@ app.put('/api/reading/:id', authCheck, (req, res) => {
 // DELETE Reading Question
 app.delete('/api/reading/:id', authCheck, (req, res) => {
   const { id } = req.params;
-  db.run("DELETE FROM reading_questions WHERE id = ?", [id], function(err) {
+  db.run("DELETE FROM reading_questions WHERE id = ?", [Number(id)], function(err) {
     if (err) return res.status(500).json({ success: false, error: err.message });
     if (this.changes === 0) return res.status(404).json({ success: false, error: "Soal tidak ditemukan" });
     res.json({ success: true, message: "Soal Membaca berhasil dihapus!" });
   });
-});
-
-// Fallback route for SPA Admin Portal
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
