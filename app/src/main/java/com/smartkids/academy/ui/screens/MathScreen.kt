@@ -534,10 +534,10 @@ fun MathQuizView(
                                             score += 10
                                             streak++
                                             correctCountInSession++
-                                            SoundManager.playCorrectSound()
+                                            SoundManager.playCorrectSound(context)
                                         } else {
                                             streak = 0
-                                            SoundManager.playWrongSound()
+                                            SoundManager.playWrongSound(context)
                                         }
 
                                         scope.launch {

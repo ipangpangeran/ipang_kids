@@ -1,42 +1,73 @@
 package com.smartkids.academy.ui.components
 
-import android.media.AudioManager
-import android.media.ToneGenerator
-import android.os.Handler
-import android.os.Looper
+import android.content.Context
+import android.media.MediaPlayer
+import com.smartkids.academy.R
 
 object SoundManager {
-    private var toneGenerator: ToneGenerator? = null
+    private var bgPlayer: MediaPlayer? = null
 
-    init {
+    fun startBackgroundMusic(context: Context) {
         try {
-            toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-        } catch (_: Exception) {
-            toneGenerator = null
-        }
-    }
-
-    fun playCorrectSound() {
-        try {
-            // Bright cheerful game bell chime
-            toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, 120)
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    toneGenerator?.startTone(ToneGenerator.TONE_SUP_CONFIRM, 220)
-                } catch (_: Exception) {}
-            }, 100)
+            if (bgPlayer == null) {
+                bgPlayer = MediaPlayer.create(context.applicationContext, R.raw.backsound).apply {
+                    isLooping = true
+                    setVolume(0.35f, 0.35f)
+                }
+            }
+            if (bgPlayer?.isPlaying == false) {
+                bgPlayer?.start()
+            }
         } catch (_: Exception) {}
     }
 
-    fun playWrongSound() {
+    fun pauseBackgroundMusic() {
         try {
-            toneGenerator?.startTone(ToneGenerator.TONE_PROP_NACK, 250)
+            if (bgPlayer?.isPlaying == true) {
+                bgPlayer?.pause()
+            }
         } catch (_: Exception) {}
     }
 
-    fun playStarSound() {
+    fun resumeBackgroundMusic() {
         try {
-            toneGenerator?.startTone(ToneGenerator.TONE_PROP_PROMPT, 200)
+            if (bgPlayer != null && bgPlayer?.isPlaying == false) {
+                bgPlayer?.start()
+            }
+        } catch (_: Exception) {}
+    }
+
+    fun stopBackgroundMusic() {
+        try {
+            bgPlayer?.stop()
+            bgPlayer?.release()
+            bgPlayer = null
+        } catch (_: Exception) {}
+    }
+
+    fun playCorrectSound(context: Context) {
+        try {
+            val mp = MediaPlayer.create(context.applicationContext, R.raw.correct)
+            mp?.setOnCompletionListener { it.release() }
+            mp?.start()
+        } catch (_: Exception) {}
+    }
+
+    fun playWrongSound(context: Context) {
+        try {
+            val mp = MediaPlayer.create(context.applicationContext, R.raw.incorrect)
+            mp?.setOnCompletionListener { it.release() }
+            mp?.start()
+        } catch (_: Exception) {}
+    }
+
+    fun playStarSound(context: Context? = null) {
+        try {
+            context?.let {
+                val mp = MediaPlayer.create(it.applicationContext, R.raw.correct)
+                mp?.setOnCompletionListener { p -> p.release() }
+                mp?.start()
+            }
         } catch (_: Exception) {}
     }
 }

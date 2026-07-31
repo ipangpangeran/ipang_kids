@@ -38,6 +38,7 @@ import com.smartkids.academy.ui.screens.*
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.smartkids.academy.ui.components.SoundManager.startBackgroundMusic(this)
         setContent {
             IPSmartKidsTheme {
                 Surface(
@@ -48,6 +49,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        com.smartkids.academy.ui.components.SoundManager.resumeBackgroundMusic()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        com.smartkids.academy.ui.components.SoundManager.pauseBackgroundMusic()
     }
 }
 

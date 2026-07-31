@@ -437,9 +437,9 @@ fun ReadingQuizView() {
                             if (isCorrect) {
                                 score += 10
                                 correctCountInSession++
-                                SoundManager.playCorrectSound()
+                                SoundManager.playCorrectSound(context)
                             } else {
-                                SoundManager.playWrongSound()
+                                SoundManager.playWrongSound(context)
                             }
 
                             scope.launch {
