@@ -16,12 +16,16 @@ object QuizApiService {
     suspend fun fetchMathQuestions(category: MathCategory, difficulty: QuizDifficulty): List<MathQuestion>? {
         return withContext(Dispatchers.IO) {
             try {
-                val urlString = "$BASE_URL/api/math?category=${category.name}&difficulty=${difficulty.name}"
+                val timestamp = System.currentTimeMillis()
+                val urlString = "$BASE_URL/api/math?_t=$timestamp"
                 val url = URL(urlString)
                 val connection = (url.openConnection() as HttpURLConnection).apply {
                     requestMethod = "GET"
-                    connectTimeout = 3500
-                    readTimeout = 3500
+                    connectTimeout = 4000
+                    readTimeout = 4000
+                    useCaches = false
+                    setRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate")
+                    setRequestProperty("Pragma", "no-cache")
                 }
 
                 if (connection.responseCode == 200) {
@@ -40,25 +44,28 @@ object QuizApiService {
 
                             val optsArray = obj.getJSONArray("options")
                             val options = listOf(
-                                optsArray.getInt(0),
-                                optsArray.getInt(1),
-                                optsArray.getInt(2),
-                                optsArray.getInt(3)
+                                optsArray.optInt(0, 0),
+                                optsArray.optInt(1, 0),
+                                optsArray.optInt(2, 0),
+                                optsArray.optInt(3, 0)
                             )
 
-                            list.add(
-                                MathQuestion(
-                                    category = catEnum,
-                                    difficulty = diffEnum,
-                                    questionText = obj.getString("questionText"),
-                                    visualRepresentation = obj.optString("visualRepresentation", ""),
-                                    options = options,
-                                    correctAnswer = obj.getInt("correctAnswer"),
-                                    explanationTip = obj.optString("explanationTip", "")
-                                )
+                            val q = MathQuestion(
+                                category = catEnum,
+                                difficulty = diffEnum,
+                                questionText = obj.getString("questionText"),
+                                visualRepresentation = obj.optString("visualRepresentation", ""),
+                                options = options,
+                                correctAnswer = obj.optInt("correctAnswer", options[0]),
+                                explanationTip = obj.optString("explanationTip", "")
                             )
+
+                            // Match selected category and difficulty
+                            if (q.category == category && q.difficulty == difficulty) {
+                                list.add(q)
+                            }
                         }
-                        return@withContext list
+                        if (list.isNotEmpty()) return@withContext list
                     }
                 }
             } catch (_: Exception) {
@@ -71,11 +78,15 @@ object QuizApiService {
     suspend fun fetchReadingQuestions(): List<ReadingQuestion>? {
         return withContext(Dispatchers.IO) {
             try {
-                val url = URL("$BASE_URL/api/reading")
+                val timestamp = System.currentTimeMillis()
+                val url = URL("$BASE_URL/api/reading?_t=$timestamp")
                 val connection = (url.openConnection() as HttpURLConnection).apply {
                     requestMethod = "GET"
-                    connectTimeout = 3500
-                    readTimeout = 3500
+                    connectTimeout = 4000
+                    readTimeout = 4000
+                    useCaches = false
+                    setRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate")
+                    setRequestProperty("Pragma", "no-cache")
                 }
 
                 if (connection.responseCode == 200) {
@@ -89,10 +100,10 @@ object QuizApiService {
                             val obj = array.getJSONObject(i)
                             val optsArray = obj.getJSONArray("options")
                             val options = listOf(
-                                optsArray.getString(0),
-                                optsArray.getString(1),
-                                optsArray.getString(2),
-                                optsArray.getString(3)
+                                optsArray.optString(0, ""),
+                                optsArray.optString(1, ""),
+                                optsArray.optString(2, ""),
+                                optsArray.optString(3, "")
                             )
 
                             list.add(
@@ -101,12 +112,12 @@ object QuizApiService {
                                     questionText = obj.getString("questionText"),
                                     emoji = obj.optString("emoji", ""),
                                     options = options,
-                                    correctAnswer = obj.getString("correctAnswer"),
+                                    correctAnswer = obj.optString("correctAnswer", options[0]),
                                     explanationTip = obj.optString("explanationTip", "")
                                 )
                             )
                         }
-                        return@withContext list
+                        if (list.isNotEmpty()) return@withContext list
                     }
                 }
             } catch (_: Exception) {

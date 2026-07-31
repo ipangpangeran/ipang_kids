@@ -3,6 +3,7 @@ package com.smartkids.academy
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,9 +17,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -27,7 +30,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.smartkids.academy.ui.theme.*
-import com.smartkids.academy.ui.components.HandwritingCanvas
 import com.smartkids.academy.ui.screens.*
 
 class MainActivity : ComponentActivity() {
@@ -73,7 +75,6 @@ fun AppNavigation() {
     }
 }
 
-// Navigation dashboard card model
 data class NavigationItem(
     val title: String,
     val description: String,
@@ -91,14 +92,14 @@ fun HomeScreen(navController: NavController) {
         NavigationItem("📖 Reading", "Phonics, letters & simple words", Icons.Default.Create, SoftGreenMath, SoftGreenMath.copy(alpha = 0.8f), Screen.Reading.route),
         NavigationItem("✏️ Writing", "Trace letters, numbers & words", Icons.Default.Edit, SoftOrangeReading, SoftOrangeReading.copy(alpha = 0.8f), Screen.Writing.route),
         NavigationItem("🧠 Brain Games", "Memory match, sequences & patterns", Icons.Default.Star, SoftPurpleWriting, SoftPurpleWriting.copy(alpha = 0.8f), Screen.BrainGames.route),
-        NavigationItem("⭐ Rewards Shop", "Spend stars on stickers & stickers", Icons.Default.ShoppingCart, SoftPinkBrain, SoftPinkBrain.copy(alpha = 0.8f), Screen.Rewards.route),
+        NavigationItem("⭐ Rewards Shop", "Spend stars on stickers & avatars", Icons.Default.ShoppingCart, SoftPinkBrain, SoftPinkBrain.copy(alpha = 0.8f), Screen.Rewards.route),
         NavigationItem("📈 Progress / Parent", "Check reports & settings", Icons.Default.Person, DarkText.copy(alpha = 0.6f), DarkText, Screen.ParentDashboard.route)
     )
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("IP Smart Kids Academy 🌟", fontWeight = FontWeight.Bold) },
+                title = { Text("Anka Games 🌟", fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White
@@ -113,13 +114,37 @@ fun HomeScreen(navController: NavController) {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
-                text = "What do you want to learn today?",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = DarkText,
-                modifier = Modifier.padding(bottom = 20.dp)
-            )
+            // App Logo Banner
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_anka_logo),
+                    contentDescription = "Anka Games Logo",
+                    modifier = Modifier
+                        .size(68.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = "Anka Games",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Text(
+                        text = "Learn, Play & Explore!",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = DarkText.copy(alpha = 0.7f)
+                    )
+                }
+            }
 
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = 150.dp),
@@ -175,8 +200,6 @@ fun HomeScreen(navController: NavController) {
         }
     }
 }
-
-// Game module screens imported from ui.screens package
 
 @Composable
 fun BrainGamesScreen(navController: NavController) {

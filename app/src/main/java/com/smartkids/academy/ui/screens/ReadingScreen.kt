@@ -301,12 +301,19 @@ fun ReadingQuizView() {
     val db = remember { AppDatabase.getDatabase(context, scope) }
 
     var questions by remember { mutableStateOf(getRichReadingQuestions()) }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
+    var isSyncing by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshTrigger) {
+        isSyncing = true
         val remoteQuestions = QuizApiService.fetchReadingQuestions()
         if (!remoteQuestions.isNullOrEmpty()) {
             questions = remoteQuestions
+            if (refreshTrigger > 0) {
+                android.widget.Toast.makeText(context, "Soal Membaca diperbarui dari server! 🔄", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
+        isSyncing = false
     }
     var currentQuestionIndex by remember { mutableIntStateOf(0) }
     var score by remember { mutableIntStateOf(0) }
@@ -327,6 +334,19 @@ fun ReadingQuizView() {
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+        // Refresh Trigger Button Row
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(bottom = 6.dp),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AssistChip(
+                onClick = { refreshTrigger++ },
+                label = { Text(if (isSyncing) "Syncing..." else "🔄 Refresh Soal Live", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                colors = AssistChipDefaults.assistChipColors(containerColor = Color.White)
+            )
+        }
+
         // Score & Progress Header
         Row(
             modifier = Modifier

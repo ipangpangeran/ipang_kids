@@ -287,15 +287,19 @@ fun MathQuizView(
     var currentQuestionIndex by remember { mutableIntStateOf(0) }
     var correctCountInSession by remember { mutableIntStateOf(0) }
 
-    var questionsList by remember(currentCategory, currentDifficulty) {
-        mutableStateOf(get15QuestionsPerCategory(currentCategory, currentDifficulty))
-    }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
+    var isSyncing by remember { mutableStateOf(false) }
 
-    LaunchedEffect(currentCategory, currentDifficulty) {
+    LaunchedEffect(currentCategory, currentDifficulty, refreshTrigger) {
+        isSyncing = true
         val remoteQuestions = QuizApiService.fetchMathQuestions(currentCategory, currentDifficulty)
         if (!remoteQuestions.isNullOrEmpty()) {
             questionsList = remoteQuestions
+            if (refreshTrigger > 0) {
+                android.widget.Toast.makeText(context, "Soal diperbarui dari server! 🔄", android.widget.Toast.LENGTH_SHORT).show()
+            }
         }
+        isSyncing = false
     }
 
     val isQuizFinished = currentQuestionIndex >= questionsList.size
@@ -341,25 +345,33 @@ fun MathQuizView(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Difficulty Filter Chips
+        // Difficulty Filter Chips & Live Sync Button
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            QuizDifficulty.values().forEach { diff ->
-                val isSelected = currentDifficulty == diff
-                ElevatedFilterChip(
-                    selected = isSelected,
-                    onClick = {
-                        currentDifficulty = diff
-                        currentQuestionIndex = 0
-                        correctCountInSession = 0
-                        isAnswered = false
-                        selectedOption = null
-                    },
-                    label = { Text(diff.title, fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) }
-                )
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                QuizDifficulty.values().forEach { diff ->
+                    val isSelected = currentDifficulty == diff
+                    ElevatedFilterChip(
+                        selected = isSelected,
+                        onClick = {
+                            currentDifficulty = diff
+                            currentQuestionIndex = 0
+                            correctCountInSession = 0
+                            isAnswered = false
+                            selectedOption = null
+                        },
+                        label = { Text(diff.title, fontSize = 12.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) }
+                    )
+                }
             }
+            AssistChip(
+                onClick = { refreshTrigger++ },
+                label = { Text(if (isSyncing) "Syncing..." else "🔄 Refresh", fontSize = 11.sp, fontWeight = FontWeight.Bold) },
+                colors = AssistChipDefaults.assistChipColors(containerColor = Color.White)
+            )
         }
 
         Spacer(modifier = Modifier.height(10.dp))

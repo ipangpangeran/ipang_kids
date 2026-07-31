@@ -2,7 +2,6 @@ package com.smartkids.academy.ui.components
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -10,19 +9,21 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.graphicsLayer
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.random.Random
 
-data class ConfettiParticle(
-    var x: Float,
-    var y: Float,
-    var vx: Float,
-    var vy: Float,
-    var radius: Float,
-    var color: Color,
-    var alpha: Float = 1f,
-    var rotation: Float = 0f,
-    var vRot: Float = 0f
+data class EnhancedParticle(
+    val initialX: Float,
+    val initialY: Float,
+    val vx: Float,
+    val vy: Float,
+    val size: Float,
+    val color: Color,
+    val shapeType: Int, // 0: Circle, 1: Rectangle, 2: Star/Ribbon
+    val rotSpeed: Float
 )
 
 @Composable
@@ -34,64 +35,84 @@ fun ConfettiCanvas(
 
     val particles = remember {
         val colors = listOf(
-            Color(0xFFFFC107), // Gold
-            Color(0xFFE91E63), // Pink
-            Color(0xFF4CAF50), // Green
-            Color(0xFF2196F3), // Blue
-            Color(0xFF9C27B0), // Purple
-            Color(0xFFFF5722)  // Orange
+            Color(0xFFFF1744), // Red
+            Color(0xFFFFD600), // Yellow
+            Color(0xFF00E676), // Green
+            Color(0xFF2979FF), // Blue
+            Color(0xFFA000FF), // Purple
+            Color(0xFFFF6D00)  // Orange
         )
-        List(45) {
-            ConfettiParticle(
-                x = Random.nextFloat(),
-                y = Random.nextFloat() * 0.3f, // start near top
-                vx = (Random.nextFloat() - 0.5f) * 0.015f,
-                vy = Random.nextFloat() * 0.02f + 0.008f,
-                radius = Random.nextFloat() * 12f + 8f,
+        List(90) {
+            val angle = Random.nextDouble(0.0, 2.0 * Math.PI)
+            val speed = Random.nextFloat() * 0.4f + 0.1f
+            EnhancedParticle(
+                initialX = Random.nextFloat() * 0.8f + 0.1f,
+                initialY = Random.nextFloat() * 0.2f + 0.1f,
+                vx = (cos(angle) * speed).toFloat(),
+                vy = (sin(angle) * speed + 0.3f).toFloat(),
+                size = Random.nextFloat() * 16f + 10f,
                 color = colors.random(),
-                alpha = 1f,
-                vRot = Random.nextFloat() * 10f - 5f
+                shapeType = Random.nextInt(0, 3),
+                rotSpeed = Random.nextFloat() * 360f - 180f
             )
         }
     }
 
-    val transition = rememberInfiniteTransition(label = "confetti")
+    val transition = rememberInfiniteTransition(label = "confetti_anim")
     val progress by transition.animateFloat(
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1500, easing = LinearEasing),
+            animation = tween(durationMillis = 2000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
         ),
         label = "progress"
     )
 
     Canvas(modifier = modifier.fillMaxSize()) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
+        val width = size.width
+        val height = size.height
 
         particles.forEach { p ->
-            val px = (p.x * canvasWidth + progress * p.vx * canvasWidth) % canvasWidth
-            val py = (p.y * canvasHeight + progress * p.vy * canvasHeight * 1.5f) % canvasHeight
-            val alpha = (1f - progress).coerceIn(0f, 1f)
+            val posX = p.initialX * width + p.vx * progress * width * 0.5f
+            val posY = p.initialY * height + p.vy * progress * height * 0.8f + 0.5f * 9.8f * progress * progress * 40f
+            val alpha = (1.2f - progress).coerceIn(0f, 1f)
+            val currentRot = progress * p.rotSpeed
 
-            drawCircle(
-                color = p.color.copy(alpha = alpha),
-                radius = p.radius,
-                center = Offset(px, py)
-            )
-            drawRect(
-                color = p.color.copy(alpha = alpha),
-                topLeft = Offset(px - p.radius / 2, py - p.radius / 2),
-                size = Size(p.radius, p.radius * 1.5f)
-            )
+            withTransform({
+                rotate(currentRot, pivot = Offset(posX, posY))
+            }) {
+                when (p.shapeType) {
+                    0 -> {
+                        drawCircle(
+                            color = p.color.copy(alpha = alpha),
+                            radius = p.size / 2,
+                            center = Offset(posX, posY)
+                        )
+                    }
+                    1 -> {
+                        drawRect(
+                            color = p.color.copy(alpha = alpha),
+                            topLeft = Offset(posX - p.size / 2, posY - p.size / 2),
+                            size = Size(p.size, p.size * 1.6f)
+                        )
+                    }
+                    else -> {
+                        drawRect(
+                            color = p.color.copy(alpha = alpha),
+                            topLeft = Offset(posX - p.size / 3, posY - p.size / 2),
+                            size = Size(p.size * 1.8f, p.size / 2)
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
 fun Modifier.shake(trigger: Boolean): Modifier = composed {
     val shakeOffset by animateFloatAsState(
-        targetValue = if (trigger) 0f else 0f,
+        targetValue = if (trigger) 12f else 0f,
         animationSpec = repeatable(
             iterations = 4,
             animation = tween(durationMillis = 50, easing = LinearEasing),
