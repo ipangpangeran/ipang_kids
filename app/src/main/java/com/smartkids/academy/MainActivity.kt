@@ -104,6 +104,15 @@ fun HomeScreen(navController: NavController) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
+    var appSettings by remember { mutableStateOf(com.smartkids.academy.data.remote.AppSettings()) }
+
+    LaunchedEffect(Unit) {
+        val remoteSettings = com.smartkids.academy.data.remote.QuizApiService.fetchAppSettings()
+        if (remoteSettings != null) {
+            appSettings = remoteSettings
+        }
+    }
+
     val menuItems = listOf(
         NavigationItem("🎮 Kuis Matematika", "Kuis angka & hitungan visual", Icons.Default.Add, SoftBluePrimary, SoftBlueSecondary, Screen.Math.route),
         NavigationItem("🎯 Kuis Membaca", "Tebak kata & gambar interaktif", Icons.Default.Create, SoftGreenMath, SoftGreenMath.copy(alpha = 0.8f), Screen.Reading.route),
@@ -116,7 +125,7 @@ fun HomeScreen(navController: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Anka Games 🌟", fontWeight = FontWeight.Bold) },
+                title = { Text(appSettings.headerTitle, fontWeight = FontWeight.Bold) },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White
@@ -149,13 +158,13 @@ fun HomeScreen(navController: NavController) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = "Anka Games",
+                        text = appSettings.homeTitle,
                         fontSize = if (isLandscape) 20.sp else 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Kuis & Mini Games Edukasi Anak",
+                        text = appSettings.homeSubtitle,
                         fontSize = if (isLandscape) 12.sp else 13.sp,
                         fontWeight = FontWeight.Medium,
                         color = DarkText.copy(alpha = 0.7f)

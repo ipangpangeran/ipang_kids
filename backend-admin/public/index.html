@@ -52,6 +52,9 @@
         <button class="nav-item" data-tab="reading">
           <span class="nav-icon">📖</span> Baca & Tulis
         </button>
+        <button class="nav-item" data-tab="settings">
+          <span class="nav-icon">⚙️</span> Pengaturan App
+        </button>
       </nav>
 
       <div class="sidebar-footer">
@@ -125,6 +128,33 @@
       <!-- Questions List Container -->
       <section id="questions-grid" class="questions-grid">
         <!-- Rendered dynamically via JavaScript -->
+      </section>
+
+      <!-- App Settings Panel Container -->
+      <section id="settings-panel" class="settings-panel" style="display: none;">
+        <div style="background: white; padding: 24px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); max-width: 650px; margin: 20px auto;">
+          <h2 style="margin-bottom: 8px; color: #1e293b;">⚙️ Pengaturan Judul Games & App</h2>
+          <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Ubah judul games yang tampil di Aplikasi Android secara real-time dari sini.</p>
+          
+          <form id="settings-form">
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label for="setting-header-title" style="font-weight: 600; display: block; margin-bottom: 6px;">1. Judul Games di Halaman Utama (Header / TopBar)</label>
+              <input type="text" id="setting-header-title" placeholder="Contoh: Anka Games 🌟" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label for="setting-home-title" style="font-weight: 600; display: block; margin-bottom: 6px;">2. Judul Games Home (Banner Utama)</label>
+              <input type="text" id="setting-home-title" placeholder="Contoh: Anka Games" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+              <label for="setting-home-subtitle" style="font-weight: 600; display: block; margin-bottom: 6px;">3. Sub Judul di Bawah Judul Home</label>
+              <input type="text" id="setting-home-subtitle" placeholder="Contoh: Kuis & Mini Games Edukasi Anak" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #cbd5e1;">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full" style="padding: 12px; font-size: 16px;">Simpan Pengaturan App 💾</button>
+          </form>
+        </div>
       </section>
     </main>
   </div>

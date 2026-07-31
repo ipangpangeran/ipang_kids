@@ -89,21 +89,36 @@ function setupEventListeners() {
     closeMobileSidebar();
   });
 
-  // Tab Switch (Math / Reading)
+  // Tab Switch (Math / Reading / Settings)
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', (e) => {
       document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
       e.currentTarget.classList.add('active');
 
       currentTab = e.currentTarget.dataset.tab;
-      document.getElementById('math-filters').style.display = (currentTab === 'math') ? 'flex' : 'none';
-      document.getElementById('form-math-fields').style.display = (currentTab === 'math') ? 'block' : 'none';
-      document.getElementById('math-visual-group').style.display = (currentTab === 'math') ? 'block' : 'none';
-      document.getElementById('form-reading-fields').style.display = (currentTab === 'reading') ? 'block' : 'none';
+      const isSettings = (currentTab === 'settings');
 
-      document.getElementById('page-title').innerText = (currentTab === 'math') ? 'Management Kuis Matematika' : 'Management Kuis Baca & Tulis';
+      document.querySelector('.stats-grid').style.display = isSettings ? 'none' : 'grid';
+      document.querySelector('.toolbar').style.display = isSettings ? 'none' : 'flex';
+      document.getElementById('questions-grid').style.display = isSettings ? 'none' : 'grid';
+      document.getElementById('settings-panel').style.display = isSettings ? 'block' : 'none';
+      document.getElementById('btn-add-question').style.display = isSettings ? 'none' : 'inline-block';
+
+      if (isSettings) {
+        document.getElementById('page-title').innerText = 'Pengaturan Judul Games & App';
+        document.getElementById('page-subtitle').innerText = 'Atur judul halaman utama & header games yang tampil di HP Android';
+        loadSettings();
+      } else {
+        document.getElementById('math-filters').style.display = (currentTab === 'math') ? 'flex' : 'none';
+        document.getElementById('form-math-fields').style.display = (currentTab === 'math') ? 'block' : 'none';
+        document.getElementById('math-visual-group').style.display = (currentTab === 'math') ? 'block' : 'none';
+        document.getElementById('form-reading-fields').style.display = (currentTab === 'reading') ? 'block' : 'none';
+
+        document.getElementById('page-title').innerText = (currentTab === 'math') ? 'Management Kuis Matematika' : 'Management Kuis Baca & Tulis';
+        document.getElementById('page-subtitle').innerText = 'Tambah, edit, dan hapus soal kuis secara real-time dari HP maupun Mac!';
+        loadQuestions();
+      }
       closeMobileSidebar();
-      loadQuestions();
     });
   });
 
@@ -123,6 +138,9 @@ function setupEventListeners() {
 
   // Question Form Submit
   document.getElementById('question-form').addEventListener('submit', handleFormSubmit);
+
+  // Settings Form Submit
+  document.getElementById('settings-form').addEventListener('submit', handleSettingsSubmit);
 }
 
 // Fetch Questions from API
@@ -335,4 +353,46 @@ function showToast(msg, type = 'info') {
   setTimeout(() => {
     toast.remove();
   }, 3500);
+}
+
+// Fetch App Settings from API
+async function loadSettings() {
+  try {
+    const res = await fetch(`/api/settings?_t=${Date.now()}`);
+    const data = await res.json();
+    if (data.success && data.data) {
+      document.getElementById('setting-header-title').value = data.data.headerTitle || '';
+      document.getElementById('setting-home-title').value = data.data.homeTitle || '';
+      document.getElementById('setting-home-subtitle').value = data.data.homeSubtitle || '';
+    }
+  } catch (err) {
+    showToast('Gagal memuat pengaturan app!', 'error');
+  }
+}
+
+// Submit App Settings Update
+async function handleSettingsSubmit(e) {
+  e.preventDefault();
+  const headerTitle = document.getElementById('setting-header-title').value.trim();
+  const homeTitle = document.getElementById('setting-home-title').value.trim();
+  const homeSubtitle = document.getElementById('setting-home-subtitle').value.trim();
+
+  try {
+    const res = await fetch('/api/settings', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-admin-token': adminToken
+      },
+      body: JSON.stringify({ headerTitle, homeTitle, homeSubtitle })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast(data.message || 'Pengaturan berhasil disimpan! 💾', 'success');
+    } else {
+      showToast(data.error || 'Gagal menyimpan pengaturan!', 'error');
+    }
+  } catch (err) {
+    showToast('Terjadi kesalahan koneksi!', 'error');
+  }
 }

@@ -250,6 +250,48 @@ app.delete('/api/reading/:id', authCheck, (req, res) => {
   });
 });
 
+// GET App Settings
+app.get('/api/settings', (req, res) => {
+  db.get("SELECT header_title, home_title, home_subtitle FROM app_settings WHERE id = 1", (err, row) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    const data = row || {
+      header_title: 'Anka Games 🌟',
+      home_title: 'Anka Games',
+      home_subtitle: 'Kuis & Mini Games Edukasi Anak'
+    };
+    res.json({
+      success: true,
+      data: {
+        headerTitle: data.header_title,
+        homeTitle: data.home_title,
+        homeSubtitle: data.home_subtitle
+      }
+    });
+  });
+});
+
+// PUT Update App Settings
+app.put('/api/settings', authCheck, (req, res) => {
+  const { headerTitle, homeTitle, homeSubtitle } = req.body;
+  if (!headerTitle || !homeTitle || !homeSubtitle) {
+    return res.status(400).json({ success: false, error: "Field tidak lengkap. Mohon isi semua judul!" });
+  }
+
+  const sql = `
+    INSERT INTO app_settings (id, header_title, home_title, home_subtitle)
+    VALUES (1, ?, ?, ?)
+    ON CONFLICT(id) DO UPDATE SET
+      header_title = excluded.header_title,
+      home_title = excluded.home_title,
+      home_subtitle = excluded.home_subtitle
+  `;
+
+  db.run(sql, [headerTitle.trim(), homeTitle.trim(), homeSubtitle.trim()], function(err) {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, message: "Pengaturan Judul Games berhasil diperbarui!" });
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Ipang Kids Quiz Admin Server running at http://localhost:${PORT}`);
 });

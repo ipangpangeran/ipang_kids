@@ -10,8 +10,45 @@ import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
 
+data class AppSettings(
+    val headerTitle: String = "Anka Games 🌟",
+    val homeTitle: String = "Anka Games",
+    val homeSubtitle: String = "Kuis & Mini Games Edukasi Anak"
+)
+
 object QuizApiService {
     private const val BASE_URL = "https://api.ipangpangeran.com"
+
+    suspend fun fetchAppSettings(): AppSettings? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val timestamp = System.currentTimeMillis()
+                val url = URL("$BASE_URL/api/settings?_t=$timestamp")
+                val connection = (url.openConnection() as HttpURLConnection).apply {
+                    requestMethod = "GET"
+                    connectTimeout = 4000
+                    readTimeout = 4000
+                    useCaches = false
+                    setRequestProperty("Cache-Control", "no-cache, no-store, must-revalidate")
+                    setRequestProperty("Pragma", "no-cache")
+                }
+
+                if (connection.responseCode == 200) {
+                    val responseText = connection.inputStream.bufferedReader().use { it.readText() }
+                    val json = JSONObject(responseText)
+                    if (json.optBoolean("success")) {
+                        val dataObj = json.getJSONObject("data")
+                        return@withContext AppSettings(
+                            headerTitle = dataObj.optString("headerTitle", "Anka Games 🌟"),
+                            homeTitle = dataObj.optString("homeTitle", "Anka Games"),
+                            homeSubtitle = dataObj.optString("homeSubtitle", "Kuis & Mini Games Edukasi Anak")
+                        )
+                    }
+                }
+            } catch (_: Exception) {}
+            return@withContext null
+        }
+    }
 
     suspend fun fetchMathQuestions(category: MathCategory, difficulty: QuizDifficulty): List<MathQuestion>? {
         return withContext(Dispatchers.IO) {
@@ -71,9 +108,7 @@ object QuizApiService {
                         if (list.isNotEmpty()) return@withContext list
                     }
                 }
-            } catch (_: Exception) {
-                // Return null so callers seamlessly fallback to offline local questions
-            }
+            } catch (_: Exception) {}
             return@withContext null
         }
     }
@@ -123,9 +158,7 @@ object QuizApiService {
                         if (list.isNotEmpty()) return@withContext list
                     }
                 }
-            } catch (_: Exception) {
-                // Return null so callers seamlessly fallback to offline local questions
-            }
+            } catch (_: Exception) {}
             return@withContext null
         }
     }

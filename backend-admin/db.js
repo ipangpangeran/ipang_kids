@@ -40,6 +40,26 @@ db.serialize(() => {
     )
   `);
 
+  // Table App Settings
+  db.run(`
+    CREATE TABLE IF NOT EXISTS app_settings (
+      id INTEGER PRIMARY KEY DEFAULT 1,
+      header_title TEXT NOT NULL,
+      home_title TEXT NOT NULL,
+      home_subtitle TEXT NOT NULL
+    )
+  `);
+
+  // Seed App Settings if empty
+  db.get("SELECT COUNT(*) as count FROM app_settings", (err, row) => {
+    if (row && row.count === 0) {
+      db.run(`
+        INSERT INTO app_settings (id, header_title, home_title, home_subtitle)
+        VALUES (1, 'Anka Games 🌟', 'Anka Games', 'Kuis & Mini Games Edukasi Anak')
+      `);
+    }
+  });
+
   // Check and seed Math Questions if empty
   db.get("SELECT COUNT(*) as count FROM math_questions", (err, row) => {
     if (row && row.count === 0) {
