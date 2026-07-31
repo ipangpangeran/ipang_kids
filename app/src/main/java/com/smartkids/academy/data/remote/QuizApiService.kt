@@ -60,8 +60,11 @@ object QuizApiService {
                                 explanationTip = obj.optString("explanationTip", "")
                             )
 
-                            // Match selected category and difficulty
-                            if (q.category == category && q.difficulty == difficulty) {
+                            // Match selected category and difficulty (ALL matches any difficulty)
+                            val categoryMatches = (category == MathCategory.MIXED || q.category == category)
+                            val difficultyMatches = (difficulty == QuizDifficulty.ALL || q.difficulty == difficulty)
+
+                            if (categoryMatches && difficultyMatches) {
                                 list.add(q)
                             }
                         }

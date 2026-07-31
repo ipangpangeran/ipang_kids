@@ -287,6 +287,10 @@ fun MathQuizView(
     var currentQuestionIndex by remember { mutableIntStateOf(0) }
     var correctCountInSession by remember { mutableIntStateOf(0) }
 
+    var questionsList by remember(currentCategory, currentDifficulty) {
+        mutableStateOf(get15QuestionsPerCategory(currentCategory, currentDifficulty))
+    }
+
     var refreshTrigger by remember { mutableIntStateOf(0) }
     var isSyncing by remember { mutableStateOf(false) }
 
