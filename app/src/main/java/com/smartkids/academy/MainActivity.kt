@@ -1,5 +1,6 @@
 package com.smartkids.academy
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -21,8 +22,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -87,13 +90,16 @@ data class NavigationItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     val menuItems = listOf(
-        NavigationItem("📘 Mathematics", "Numbers & visual calculations", Icons.Default.Add, SoftBluePrimary, SoftBlueSecondary, Screen.Math.route),
-        NavigationItem("📖 Reading", "Phonics, letters & simple words", Icons.Default.Create, SoftGreenMath, SoftGreenMath.copy(alpha = 0.8f), Screen.Reading.route),
-        NavigationItem("✏️ Writing", "Trace letters, numbers & words", Icons.Default.Edit, SoftOrangeReading, SoftOrangeReading.copy(alpha = 0.8f), Screen.Writing.route),
-        NavigationItem("🧠 Brain Games", "Memory match, sequences & patterns", Icons.Default.Star, SoftPurpleWriting, SoftPurpleWriting.copy(alpha = 0.8f), Screen.BrainGames.route),
-        NavigationItem("⭐ Rewards Shop", "Spend stars on stickers & avatars", Icons.Default.ShoppingCart, SoftPinkBrain, SoftPinkBrain.copy(alpha = 0.8f), Screen.Rewards.route),
-        NavigationItem("📈 Progress / Parent", "Check reports & settings", Icons.Default.Person, DarkText.copy(alpha = 0.6f), DarkText, Screen.ParentDashboard.route)
+        NavigationItem("🎮 Kuis Matematika", "Kuis angka & hitungan visual", Icons.Default.Add, SoftBluePrimary, SoftBlueSecondary, Screen.Math.route),
+        NavigationItem("🎯 Kuis Membaca", "Tebak kata & gambar interaktif", Icons.Default.Create, SoftGreenMath, SoftGreenMath.copy(alpha = 0.8f), Screen.Reading.route),
+        NavigationItem("✏️ Game Menulis", "Latihan menulis huruf & angka", Icons.Default.Edit, SoftOrangeReading, SoftOrangeReading.copy(alpha = 0.8f), Screen.Writing.route),
+        NavigationItem("🧠 Brain Games", "Pencocokan memori & pola", Icons.Default.Star, SoftPurpleWriting, SoftPurpleWriting.copy(alpha = 0.8f), Screen.BrainGames.route),
+        NavigationItem("⭐ Toko Hadiah", "Tukar bintang dengan stiker", Icons.Default.ShoppingCart, SoftPinkBrain, SoftPinkBrain.copy(alpha = 0.8f), Screen.Rewards.route),
+        NavigationItem("📈 Parent Dashboard", "Laporan belajar & pengaturan", Icons.Default.Person, DarkText.copy(alpha = 0.6f), DarkText, Screen.ParentDashboard.route)
     )
 
     Scaffold(
@@ -111,35 +117,35 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(16.dp),
+                .padding(horizontal = if (isLandscape) 16.dp else 12.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // App Logo Banner
+            // App Logo Banner (Responsive size)
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 12.dp)
+                    .padding(bottom = if (isLandscape) 4.dp else 10.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_anka_logo),
                     contentDescription = "Anka Games Logo",
                     modifier = Modifier
-                        .size(68.dp)
-                        .clip(RoundedCornerShape(16.dp))
+                        .size(if (isLandscape) 46.dp else 60.dp)
+                        .clip(RoundedCornerShape(14.dp))
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
                         text = "Anka Games",
-                        fontSize = 24.sp,
+                        fontSize = if (isLandscape) 20.sp else 22.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = MaterialTheme.colorScheme.primary
                     )
                     Text(
-                        text = "Learn, Play & Explore!",
-                        fontSize = 14.sp,
+                        text = "Kuis & Mini Games Edukasi Anak",
+                        fontSize = if (isLandscape) 12.sp else 13.sp,
                         fontWeight = FontWeight.Medium,
                         color = DarkText.copy(alpha = 0.7f)
                     )
@@ -147,26 +153,26 @@ fun HomeScreen(navController: NavController) {
             }
 
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 150.dp),
+                columns = GridCells.Adaptive(minSize = if (isLandscape) 220.dp else 150.dp),
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                contentPadding = PaddingValues(if (isLandscape) 4.dp else 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 items(menuItems) { item ->
                     Card(
-                        shape = RoundedCornerShape(20.dp),
+                        shape = RoundedCornerShape(18.dp),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(130.dp)
+                            .height(if (isLandscape) 100.dp else 120.dp)
                             .clickable { navController.navigate(item.route) },
-                        elevation = CardDefaults.cardElevation(8.dp)
+                        elevation = CardDefaults.cardElevation(6.dp)
                     ) {
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .background(Brush.horizontalGradient(listOf(item.startColor, item.endColor)))
-                                .padding(16.dp)
+                                .padding(horizontal = 14.dp, vertical = 10.dp)
                         ) {
                             Row(
                                 modifier = Modifier.fillMaxSize(),
@@ -176,20 +182,25 @@ fun HomeScreen(navController: NavController) {
                                     imageVector = item.icon,
                                     contentDescription = item.title,
                                     tint = Color.White,
-                                    modifier = Modifier.size(54.dp)
+                                    modifier = Modifier.size(if (isLandscape) 40.dp else 48.dp)
                                 )
-                                Spacer(modifier = Modifier.width(16.dp))
-                                Column {
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         text = item.title,
                                         color = Color.White,
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold
+                                        fontSize = if (isLandscape) 16.sp else 18.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
+                                    Spacer(modifier = Modifier.height(2.dp))
                                     Text(
                                         text = item.description,
                                         color = Color.White.copy(alpha = 0.9f),
-                                        fontSize = 14.sp
+                                        fontSize = if (isLandscape) 12.sp else 13.sp,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
                                 }
                             }
@@ -210,10 +221,10 @@ fun BrainGamesScreen(navController: NavController) {
     ) {
         Text("🧠 Brain Games", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Memory matching cards, shadow outline matching, pattern sequences", fontSize = 18.sp)
+        Text("Pencocokan memori, bayangan & urutan gambar", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = { navController.navigateUp() }) {
-            Text("Back to Home")
+            Text("Kembali ke Home")
         }
     }
 }
@@ -225,12 +236,12 @@ fun RewardsScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("⭐ Rewards Shop", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text("⭐ Toko Hadiah", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Earn stars in lessons to buy avatars (🦁, 🐰, 🐼) and custom stickers!", fontSize = 18.sp)
+        Text("Kumpulkan bintang untuk tukar avatar (🦁, 🐰, 🐼) & stiker!", fontSize = 18.sp)
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = { navController.navigateUp() }) {
-            Text("Back to Home")
+            Text("Kembali ke Home")
         }
     }
 }
@@ -242,10 +253,10 @@ fun SettingsScreen(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text("⚙️ Settings Screen", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        Text("⚙️ Pengaturan App", fontSize = 28.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = { navController.navigateUp() }) {
-            Text("Back to Home")
+            Text("Kembali ke Home")
         }
     }
 }
@@ -263,7 +274,7 @@ fun ParentDashboardScreen(navController: NavController) {
         ) {
             Text("👨‍👩‍👧 Parent Dashboard", fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Please enter parent PIN (Default: 1234)", fontSize = 16.sp)
+            Text("Masukkan PIN Orang Tua (Default: 1234)", fontSize = 16.sp)
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = enteredPin,
@@ -279,10 +290,10 @@ fun ParentDashboardScreen(navController: NavController) {
                         enteredPin = ""
                     }
                 }) {
-                    Text("Verify")
+                    Text("Verifikasi")
                 }
                 Button(onClick = { navController.navigateUp() }) {
-                    Text("Cancel")
+                    Text("Batal")
                 }
             }
         }
@@ -292,16 +303,16 @@ fun ParentDashboardScreen(navController: NavController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("📈 Learning Analytics & Reports", fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Text("📈 Analitik Belajar Anak", fontSize = 28.sp, fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.height(8.dp))
-            Text("Weekly Study Time: 2 hours | Daily Streak: 4 days", fontSize = 18.sp)
+            Text("Total Waktu Main Kuis: 2 jam | Streak Harian: 4 hari", fontSize = 18.sp)
             Spacer(modifier = Modifier.height(16.dp))
             Button(onClick = { isPinVerified = false; enteredPin = "" }) {
-                Text("Lock Dashboard")
+                Text("Kunci Dashboard")
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { navController.navigateUp() }) {
-                Text("Back to Home")
+                Text("Kembali ke Home")
             }
         }
     }

@@ -62,12 +62,10 @@ data class ReadingQuestion(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReadingScreen(navController: NavController) {
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: Abjad, 1: Suku Kata, 2: Kuis Baca
-
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("📖 Pembelajaran Membaca", fontWeight = FontWeight.Bold) },
+                title = { Text("🎯 Kuis & Game Membaca", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Kembali", tint = Color.White)
@@ -80,41 +78,13 @@ fun ReadingScreen(navController: NavController) {
             )
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .background(Color(0xFFFFF8F0))
         ) {
-            TabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = Color.White,
-                contentColor = SoftOrangeReading
-            ) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text("🔤 Abjad A-Z", fontWeight = FontWeight.Bold) }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text("📚 Suku Kata", fontWeight = FontWeight.Bold) }
-                )
-                Tab(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
-                    text = { Text("🎯 Kuis Baca", fontWeight = FontWeight.Bold) }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            when (selectedTab) {
-                0 -> AlphabetView()
-                1 -> SyllableWordsView()
-                2 -> ReadingQuizView()
-            }
+            ReadingQuizView()
         }
     }
 }

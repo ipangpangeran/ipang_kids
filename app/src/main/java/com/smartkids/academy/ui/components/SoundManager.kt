@@ -18,35 +18,25 @@ object SoundManager {
 
     fun playCorrectSound() {
         try {
-            // Cheerful 3-note victory melody (Do-Mi-Sol)
-            toneGenerator?.startTone(ToneGenerator.TONE_DTMF_1, 100)
+            // Bright cheerful game bell chime
+            toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, 120)
             Handler(Looper.getMainLooper()).postDelayed({
                 try {
-                    toneGenerator?.startTone(ToneGenerator.TONE_DTMF_3, 120)
+                    toneGenerator?.startTone(ToneGenerator.TONE_SUP_CONFIRM, 220)
                 } catch (_: Exception) {}
             }, 100)
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    toneGenerator?.startTone(ToneGenerator.TONE_DTMF_5, 250)
-                } catch (_: Exception) {}
-            }, 220)
         } catch (_: Exception) {}
     }
 
     fun playWrongSound() {
         try {
-            toneGenerator?.startTone(ToneGenerator.TONE_PROP_NACK, 300)
+            toneGenerator?.startTone(ToneGenerator.TONE_PROP_NACK, 250)
         } catch (_: Exception) {}
     }
 
     fun playStarSound() {
         try {
-            toneGenerator?.startTone(ToneGenerator.TONE_DTMF_8, 150)
-            Handler(Looper.getMainLooper()).postDelayed({
-                try {
-                    toneGenerator?.startTone(ToneGenerator.TONE_DTMF_A, 250)
-                } catch (_: Exception) {}
-            }, 150)
+            toneGenerator?.startTone(ToneGenerator.TONE_PROP_PROMPT, 200)
         } catch (_: Exception) {}
     }
 }

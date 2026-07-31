@@ -69,13 +69,12 @@ data class MathQuestion(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MathScreen(navController: NavController) {
-    var selectedTab by remember { mutableIntStateOf(0) } // 0: Materi, 1: Kuis
     var selectedCategoryFilter by remember { mutableStateOf<MathCategory?>(null) }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("📘 Pembelajaran Matematika", fontWeight = FontWeight.Bold) },
+                title = { Text("🎮 Kuis & Game Matematika", fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Kembali", tint = Color.White)
@@ -88,43 +87,16 @@ fun MathScreen(navController: NavController) {
             )
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .background(Color(0xFFF7F9FC))
         ) {
-            TabRow(
-                selectedTabIndex = selectedTab,
-                containerColor = Color.White,
-                contentColor = SoftBluePrimary
-            ) {
-                Tab(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    text = { Text("📖 Materi Belajar", fontWeight = FontWeight.Bold, fontSize = 15.sp) },
-                    icon = { Icon(Icons.Default.List, contentDescription = null) }
-                )
-                Tab(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    text = { Text("📝 Kuis & Latihan", fontWeight = FontWeight.Bold, fontSize = 15.sp) },
-                    icon = { Icon(Icons.Default.CheckCircle, contentDescription = null) }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            when (selectedTab) {
-                0 -> MathMaterialsView(
-                    selectedCategory = selectedCategoryFilter,
-                    onCategorySelect = { selectedCategoryFilter = it }
-                )
-                1 -> MathQuizView(
-                    categoryFilter = selectedCategoryFilter,
-                    onSelectCategory = { selectedCategoryFilter = it }
-                )
-            }
+            MathQuizView(
+                categoryFilter = selectedCategoryFilter,
+                onSelectCategory = { selectedCategoryFilter = it }
+            )
         }
     }
 }
