@@ -128,8 +128,11 @@ function setupEventListeners() {
 // Fetch Questions from API
 async function loadQuestions() {
   try {
-    const url = currentTab === 'math' ? '/api/math' : '/api/reading';
-    const res = await fetch(url);
+    const baseUrl = currentTab === 'math' ? '/api/math' : '/api/reading';
+    const url = `${baseUrl}?_t=${Date.now()}`;
+    const res = await fetch(url, {
+      headers: { 'Cache-Control': 'no-cache' }
+    });
     const result = await res.json();
 
     if (result.success) {

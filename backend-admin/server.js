@@ -11,6 +11,15 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "ipang_auth_token_8765_secret";
 
 app.use(cors());
 app.use(express.json());
+
+// Disable caching for all API responses
+app.use('/api', (req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Auth Middleware for mutating endpoints (POST, PUT, DELETE)
