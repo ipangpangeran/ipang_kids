@@ -285,10 +285,107 @@ app.put('/api/settings', authCheck, (req, res) => {
       home_title = excluded.home_title,
       home_subtitle = excluded.home_subtitle
   `;
-
   db.run(sql, [headerTitle.trim(), homeTitle.trim(), homeSubtitle.trim()], function(err) {
     if (err) return res.status(500).json({ success: false, error: err.message });
     res.json({ success: true, message: "Pengaturan Judul Games berhasil diperbarui!" });
+  });
+});
+
+// GET Brain Games Questions
+app.get('/api/brain', (req, res) => {
+  db.all("SELECT * FROM brain_questions ORDER BY id DESC", [], (err, rows) => {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+
+    const mapped = rows.map(r => ({
+      id: r.id,
+      category: r.category,
+      difficulty: r.difficulty,
+      questionText: r.question_text,
+      emojiSet: r.emoji_set ? r.emoji_set.split(',').map(s => s.trim()) : [],
+      options: [r.option_a, r.option_b, r.option_c, r.option_d],
+      correctAnswer: r.correct_answer,
+      explanationTip: r.explanation_tip || ""
+    }));
+
+    res.json({ success: true, count: mapped.length, data: mapped });
+  });
+});
+
+// POST Create Brain Games Question
+app.post('/api/brain', authCheck, (req, res) => {
+  const { category, difficulty, questionText, emojiSet, options, correctAnswer, explanationTip } = req.body;
+
+  if (!category || !difficulty || !questionText || !options || options.length < 4 || !correctAnswer) {
+    return res.status(400).json({ success: false, error: "Field tidak lengkap. Mohon isi semua data!" });
+  }
+
+  const emojiStr = Array.isArray(emojiSet) ? emojiSet.join(',') : (emojiSet || '');
+
+  const sql = `
+    INSERT INTO brain_questions (category, difficulty, question_text, emoji_set, option_a, option_b, option_c, option_d, correct_answer, explanation_tip)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  db.run(sql, [
+    category,
+    difficulty,
+    questionText,
+    emojiStr,
+    options[0],
+    options[1],
+    options[2],
+    options[3],
+    String(correctAnswer),
+    explanationTip || ""
+  ], function(err) {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    res.json({ success: true, id: this.lastID, message: "Soal Brain Games berhasil ditambahkan!" });
+  });
+});
+
+// PUT Update Brain Games Question
+app.put('/api/brain/:id', authCheck, (req, res) => {
+  const { id } = req.params;
+  const { category, difficulty, questionText, emojiSet, options, correctAnswer, explanationTip } = req.body;
+
+  if (!category || !difficulty || !questionText || !options || options.length < 4 || !correctAnswer) {
+    return res.status(400).json({ success: false, error: "Field tidak lengkap. Mohon isi semua data!" });
+  }
+
+  const emojiStr = Array.isArray(emojiSet) ? emojiSet.join(',') : (emojiSet || '');
+
+  const sql = `
+    UPDATE brain_questions
+    SET category = ?, difficulty = ?, question_text = ?, emoji_set = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, correct_answer = ?, explanation_tip = ?
+    WHERE id = ?
+  `;
+
+  db.run(sql, [
+    category,
+    difficulty,
+    questionText,
+    emojiStr,
+    options[0],
+    options[1],
+    options[2],
+    options[3],
+    String(correctAnswer),
+    explanationTip || "",
+    Number(id)
+  ], function(err) {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    if (this.changes === 0) return res.status(404).json({ success: false, error: "Soal tidak ditemukan" });
+    res.json({ success: true, message: "Soal Brain Games berhasil diperbarui!" });
+  });
+});
+
+// DELETE Brain Games Question
+app.delete('/api/brain/:id', authCheck, (req, res) => {
+  const { id } = req.params;
+  db.run("DELETE FROM brain_questions WHERE id = ?", [Number(id)], function(err) {
+    if (err) return res.status(500).json({ success: false, error: err.message });
+    if (this.changes === 0) return res.status(404).json({ success: false, error: "Soal tidak ditemukan" });
+    res.json({ success: true, message: "Soal Brain Games berhasil dihapus!" });
   });
 });
 

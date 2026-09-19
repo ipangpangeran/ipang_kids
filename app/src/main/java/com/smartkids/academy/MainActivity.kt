@@ -32,6 +32,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.smartkids.academy.ui.screens.BrainGamesScreen
 import com.smartkids.academy.ui.theme.*
 import com.smartkids.academy.ui.screens.*
 
@@ -232,22 +233,7 @@ fun HomeScreen(navController: NavController) {
     }
 }
 
-@Composable
-fun BrainGamesScreen(navController: NavController) {
-    Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text("🧠 Brain Games", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
-        Text("Pencocokan memori, bayangan & urutan gambar", fontSize = 18.sp)
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = { navController.navigateUp() }) {
-            Text("Kembali ke Home")
-        }
-    }
-}
+
 
 @Composable
 fun RewardsScreen(navController: NavController) {

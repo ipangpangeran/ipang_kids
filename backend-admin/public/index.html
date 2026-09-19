@@ -52,6 +52,9 @@
         <button class="nav-item" data-tab="reading">
           <span class="nav-icon">📖</span> Baca & Tulis
         </button>
+        <button class="nav-item" data-tab="brain">
+          <span class="nav-icon">🧠</span> Brain Games
+        </button>
         <button class="nav-item" data-tab="settings">
           <span class="nav-icon">⚙️</span> Pengaturan App
         </button>
@@ -204,6 +207,32 @@
           <div class="form-group">
             <label for="reading-emoji">Emoji Visual</label>
             <input type="text" id="reading-emoji" placeholder="Contoh: 🍎, ⚽, 🐱">
+          </div>
+        </div>
+
+        <!-- Form fields for Brain Games -->
+        <div id="form-brain-fields" style="display: none;">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="brain-category">Kategori Brain Games</label>
+              <select id="brain-category">
+                <option value="MEMORY_MATCH">Pencocokan Memori (🃏)</option>
+                <option value="PATTERN_SEQUENCE">Pola & Urutan (🧩)</option>
+                <option value="SHADOW_MATCH">Tebak Bayangan (👤)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="brain-difficulty">Tingkat Kesulitan</label>
+              <select id="brain-difficulty">
+                <option value="EASY">🌱 Mudah</option>
+                <option value="MEDIUM">🌿 Sedang</option>
+                <option value="HARD">🚀 Cerita / Tantangan</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="brain-emoji-set">Set Emoji / Simbol Game (Pisahkan dengan koma)</label>
+            <input type="text" id="brain-emoji-set" placeholder="Contoh: 🐱, 🐶, 🐼, 🦁 atau 🍎, 🍌, 🍎, ❓">
           </div>
         </div>
 

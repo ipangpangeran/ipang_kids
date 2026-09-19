@@ -113,8 +113,10 @@ function setupEventListeners() {
         document.getElementById('form-math-fields').style.display = (currentTab === 'math') ? 'block' : 'none';
         document.getElementById('math-visual-group').style.display = (currentTab === 'math') ? 'block' : 'none';
         document.getElementById('form-reading-fields').style.display = (currentTab === 'reading') ? 'block' : 'none';
+        document.getElementById('form-brain-fields').style.display = (currentTab === 'brain') ? 'block' : 'none';
 
-        document.getElementById('page-title').innerText = (currentTab === 'math') ? 'Management Kuis Matematika' : 'Management Kuis Baca & Tulis';
+        const titles = { math: 'Management Kuis Matematika', reading: 'Management Kuis Baca & Tulis', brain: 'Management Brain Games' };
+        document.getElementById('page-title').innerText = titles[currentTab] || 'Portal Admin Kuis';
         document.getElementById('page-subtitle').innerText = 'Tambah, edit, dan hapus soal kuis secara real-time dari HP maupun Mac!';
         loadQuestions();
       }
@@ -146,7 +148,7 @@ function setupEventListeners() {
 // Fetch Questions from API
 async function loadQuestions() {
   try {
-    const baseUrl = currentTab === 'math' ? '/api/math' : '/api/reading';
+    const baseUrl = currentTab === 'math' ? '/api/math' : (currentTab === 'brain' ? '/api/brain' : '/api/reading');
     const url = `${baseUrl}?_t=${Date.now()}`;
     const res = await fetch(url, {
       headers: { 'Cache-Control': 'no-cache' }
@@ -172,7 +174,7 @@ function filterAndRender() {
   const filtered = questionsList.filter(q => {
     const textMatch = q.questionText.toLowerCase().includes(search) || (q.visualRepresentation && q.visualRepresentation.toLowerCase().includes(search));
 
-    if (currentTab === 'math') {
+    if (currentTab === 'math' || currentTab === 'brain') {
       const catMatch = (catFilter === 'ALL' || q.category === catFilter);
       const diffMatch = (diffFilter === 'ALL' || q.difficulty === diffFilter);
       return textMatch && catMatch && diffMatch;
@@ -192,7 +194,7 @@ function filterAndRender() {
     const card = document.createElement('div');
     card.className = 'question-card';
 
-    const tagsHtml = currentTab === 'math' 
+    const tagsHtml = (currentTab === 'math' || currentTab === 'brain')
       ? `<span class="tag tag-category">${q.category}</span><span class="tag tag-difficulty">${q.difficulty}</span>`
       : `<span class="tag tag-category">${q.categoryTitle}</span>`;
 
@@ -201,11 +203,13 @@ function filterAndRender() {
       return `<div class="opt-chip ${isCorrect ? 'correct' : ''}">${opt} ${isCorrect ? '✓' : ''}</div>`;
     }).join('');
 
+    const visualContent = q.visualRepresentation || q.emoji || (q.emojiSet ? q.emojiSet.join(' ') : '');
+
     card.innerHTML = `
       <div>
         <div class="card-tags">${tagsHtml}</div>
         <h3 class="question-title">${q.questionText}</h3>
-        ${q.visualRepresentation || q.emoji ? `<div class="question-visual">${q.visualRepresentation || q.emoji}</div>` : ''}
+        ${visualContent ? `<div class="question-visual">${visualContent}</div>` : ''}
         <div class="options-preview">${optionsHtml}</div>
       </div>
       <div class="card-actions">
@@ -241,6 +245,10 @@ function openQuestionModal(editData = null) {
       document.getElementById('math-category').value = editData.category;
       document.getElementById('math-difficulty').value = editData.difficulty;
       document.getElementById('math-visual').value = editData.visualRepresentation || '';
+    } else if (currentTab === 'brain') {
+      document.getElementById('brain-category').value = editData.category || 'MEMORY_MATCH';
+      document.getElementById('brain-difficulty').value = editData.difficulty || 'EASY';
+      document.getElementById('brain-emoji-set').value = editData.emojiSet ? editData.emojiSet.join(', ') : '';
     } else {
       document.getElementById('reading-category-title').value = editData.categoryTitle || '';
       document.getElementById('reading-emoji').value = editData.emoji || '';
@@ -267,7 +275,8 @@ window.deleteQuestion = async function(id) {
   if (!confirm('Apakah Anda yakin ingin menghapus soal ini?')) return;
 
   try {
-    const url = (currentTab === 'math') ? `/api/math/${id}` : `/api/reading/${id}`;
+    const baseUrl = currentTab === 'math' ? '/api/math' : (currentTab === 'brain' ? '/api/brain' : '/api/reading');
+    const url = `${baseUrl}/${id}`;
     const res = await fetch(url, {
       method: 'DELETE',
       headers: { 'x-admin-token': adminToken }
@@ -309,13 +318,18 @@ async function handleFormSubmit(e) {
     body.category = document.getElementById('math-category').value;
     body.difficulty = document.getElementById('math-difficulty').value;
     body.visualRepresentation = document.getElementById('math-visual').value.trim();
+  } else if (currentTab === 'brain') {
+    body.category = document.getElementById('brain-category').value;
+    body.difficulty = document.getElementById('brain-difficulty').value;
+    const emojiInput = document.getElementById('brain-emoji-set').value.trim();
+    body.emojiSet = emojiInput ? emojiInput.split(',').map(s => s.trim()) : [];
   } else {
     body.categoryTitle = document.getElementById('reading-category-title').value.trim() || 'Tebak Gambar & Kata';
     body.emoji = document.getElementById('reading-emoji').value.trim();
   }
 
   try {
-    const baseUrl = (currentTab === 'math') ? '/api/math' : '/api/reading';
+    const baseUrl = currentTab === 'math' ? '/api/math' : (currentTab === 'brain' ? '/api/brain' : '/api/reading');
     const url = id ? `${baseUrl}/${id}` : baseUrl;
     const method = id ? 'PUT' : 'POST';
 

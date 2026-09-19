@@ -40,6 +40,24 @@ db.serialize(() => {
     )
   `);
 
+  // Table Brain Questions
+  db.run(`
+    CREATE TABLE IF NOT EXISTS brain_questions (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      category TEXT NOT NULL,
+      difficulty TEXT NOT NULL,
+      question_text TEXT NOT NULL,
+      emoji_set TEXT DEFAULT '',
+      option_a TEXT NOT NULL,
+      option_b TEXT NOT NULL,
+      option_c TEXT NOT NULL,
+      option_d TEXT NOT NULL,
+      correct_answer TEXT NOT NULL,
+      explanation_tip TEXT DEFAULT '',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
   // Table App Settings
   db.run(`
     CREATE TABLE IF NOT EXISTS app_settings (
@@ -49,6 +67,27 @@ db.serialize(() => {
       home_subtitle TEXT NOT NULL
     )
   `);
+
+  // Seed Brain Questions if empty
+  db.get("SELECT COUNT(*) as count FROM brain_questions", (err, row) => {
+    if (row && row.count === 0) {
+      console.log("Seeding initial Brain Questions...");
+      const stmt = db.prepare(`
+        INSERT INTO brain_questions (category, difficulty, question_text, emoji_set, option_a, option_b, option_c, option_d, correct_answer, explanation_tip)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `);
+
+      const initialBrain = [
+        ["MEMORY_MATCH", "EASY", "Pencocokan Pasangan Emoji Hewan 🐱🐶", "🐱,🐶,🐼,🦁", "🐱", "🐶", "🐼", "🦁", "🐱", "Cocokkan pasangan gambar yang sama!"],
+        ["PATTERN_SEQUENCE", "EASY", "Lengkapi Pola: 🍎, 🍌, 🍎, ❓", "🍎,🍌,🍎,❓", "🍎", "🍌", "🍇", "🍊", "🍌", "Pola berulang: Apel, Pisang, Apel, Pisang!"],
+        ["PATTERN_SEQUENCE", "MEDIUM", "Lengkapi Pola: 🚗, 🚀, 🚗, 🚀, ❓", "🚗,🚀,🚗,🚀,❓", "🚗", "🚀", "✈️", "🚲", "🚗", "Pola berulang: Mobil, Roket, Mobil, Roket, Mobil!"],
+        ["SHADOW_MATCH", "EASY", "Hewan mana yang berada di hutan? 🦁", "🦁", "🦁 Singa", "🐟 Ikan", "🐙 Gurita", "🐬 Lumba-lumba", "🦁 Singa", "Singa tinggal di daratan/hutan!"]
+      ];
+
+      initialBrain.forEach(q => stmt.run(q));
+      stmt.finalize();
+    }
+  });
 
   // Seed App Settings if empty
   db.get("SELECT COUNT(*) as count FROM app_settings", (err, row) => {
