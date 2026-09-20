@@ -469,11 +469,8 @@ const gameModule = {
     qTitle.innerText = "Temukan pasangan kartu gambar yang sama! 🧠";
     ws.appendChild(qTitle);
 
-    // Dynamic grid based on level
-    const level = app.state.level;
-    let cardCount = 4; // 2x2
-    if (level === "EXPLORER") cardCount = 6; // 3x2
-    if (level === "LEARNER" || level === "READY_FOR_SCHOOL") cardCount = 8; // 4x2
+    // Hard 4x4 Grid (16 cards)
+    const cardCount = 16; 
 
     const emojisPool = ["🦄", "🦊", "🦕", "🐹", "🐝", "🦀", "🐬", "🐞", "🦁", "🐼"];
     
@@ -498,11 +495,7 @@ const gameModule = {
     // Grid Container
     const grid = document.createElement("div");
     grid.className = "memory-grid";
-    
-    // Adjust Columns dynamically
-    if (cardCount === 4) grid.style.gridTemplateColumns = "repeat(2, 1fr)";
-    else if (cardCount === 6) grid.style.gridTemplateColumns = "repeat(3, 1fr)";
-    else grid.style.gridTemplateColumns = "repeat(4, 1fr)";
+    grid.style.gridTemplateColumns = "repeat(4, 1fr)";
 
     this.memoryCards.forEach(card => {
       const cardEl = document.createElement("div");
